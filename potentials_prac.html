@@ -6,15 +6,76 @@
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     html, body {
       height: 100vh;
       background-color: #f5f5f5;
       font-family: 'Lora', serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      overflow-x: hidden;
     }
-    .page-wrapper { width: 90%; max-width: 900px; text-align: center; }
+
+    /* Меню-бургер */
+    .burger {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+    }
+
+    .burger div {
+      width: 100%;
+      height: 4px;
+      background-color: #333;
+      margin: 6px 0;
+      transition: 0.3s;
+    }
+
+    /* Боковая панель */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      
+      left: -260px;
+      width: 260px;
+      height: 100%;
+      background-color: #f0f0f0;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+      padding: 60px 24px 20px;
+      transition: left 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar.open {
+      left: 0;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar li {
+      margin: 6px 0;
+      font-size: 16px;
+      color: #111;
+      cursor: pointer;
+    }
+
+    /* Основной контент */
+    .main-content {
+      transition: filter 0.3s ease;
+      padding: 60px 20px 40px;
+    }
+
+    .blur {
+      filter: blur(5px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .page-wrapper { width: 90%; max-width: 900px; text-align: center; margin: auto; }
     .page-title { font-size: 32px; font-weight: 600; margin-bottom: 24px; }
     .steps { display: inline-flex; gap: 12px; margin-bottom: 32px; }
     .step-button {
@@ -66,9 +127,52 @@
       background-color: #e5b00f; transform: translateY(-2px);
     }
     .hidden { display: none; }
+    .home-button {
+  display: block;
+  margin: 40px auto 0;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 16px;
+
+  color: #111;
+  border: 2px solid #111;
+  border-radius: 8px;
+  text-decoration: none;
+  
+}
+
+
   </style>
 </head>
 <body>
+
+<!-- Меню-бургер -->
+<div class="burger" id="burger">
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+
+<!-- Боковая панель -->
+<aside class="sidebar" id="sidebar">
+  <ul>
+    <li><strong>1. Транспортная задача</strong></li>
+    <li>1.1 Теория</li>
+    <li>1.2 Решение</li>
+    <li><br><strong>2. Метод Парето</strong></li>
+    <li>2.1 Теория</li>
+    <li>2.2 Решение</li>
+    <li><br><strong>3. Метод анализа иерархии</strong></li>
+    <li>3.1 Теория</li>
+    <li>3.2 Решение</li>
+  </ul>
+  <a href="/"
+   class="home-button">На главную</a>
+
+</aside>
+
+<!-- Основной контент -->
+<div class="main-content" id="mainContent">
   <div class="page-wrapper">
     <h1 class="page-title">Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span></h1>
 
@@ -102,96 +206,107 @@
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    const toStep2Btn = document.getElementById('to-step2');
-    const backBtn = document.getElementById('back-to-step1');
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
-    const table = document.getElementById('matrix-table');
-    const sendBtn = document.getElementById('send-data');
+<script>
+  // Бургер-меню
+  const burger = document.getElementById('burger');
+  const sidebar = document.getElementById('sidebar');
+  const content = document.getElementById('mainContent');
 
-    let rows = 0, cols = 0;
+  burger.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    content.classList.toggle('blur');
+  });
 
-    toStep2Btn.addEventListener('click', () => {
-      rows = parseInt(document.getElementById('rows').value, 10);
-      cols = parseInt(document.getElementById('cols').value, 10);
+  // Логика шагов
+  const toStep2Btn = document.getElementById('to-step2');
+  const backBtn = document.getElementById('back-to-step1');
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const table = document.getElementById('matrix-table');
+  const sendBtn = document.getElementById('send-data');
 
-      if (!rows || !cols || rows < 1 || cols < 1) {
-        alert("Введите корректные значения.");
-        return;
-      }
+  let rows = 0, cols = 0;
 
-      step1.classList.add('hidden');
-      step2.classList.remove('hidden');
-      table.innerHTML = '';
+  toStep2Btn.addEventListener('click', () => {
+    rows = parseInt(document.getElementById('rows').value, 10);
+    cols = parseInt(document.getElementById('cols').value, 10);
 
-      // строки тарифов + запасы
-      for (let r = 0; r < rows; r++) {
-        const tr = document.createElement('tr');
-        for (let c = 0; c < cols; c++) {
-          const td = document.createElement('td');
-          td.innerHTML = `<input type="number" value="0">`;
-          tr.appendChild(td);
-        }
-        const stockTd = document.createElement('td');
-        stockTd.innerHTML = `<input type="number" value="0">`;
-        tr.appendChild(stockTd);
-        table.appendChild(tr);
-      }
+    if (!rows || !cols || rows < 1 || cols < 1) {
+      alert("Введите корректные значения.");
+      return;
+    }
 
-      // строка потребностей
-      const demandRow = document.createElement('tr');
+    step1.classList.add('hidden');
+    step2.classList.remove('hidden');
+    table.innerHTML = '';
+
+    for (let r = 0; r < rows; r++) {
+      const tr = document.createElement('tr');
       for (let c = 0; c < cols; c++) {
         const td = document.createElement('td');
         td.innerHTML = `<input type="number" value="0">`;
-        demandRow.appendChild(td);
+        tr.appendChild(td);
       }
-      demandRow.appendChild(document.createElement('td')); // пустая ячейка
-      table.appendChild(demandRow);
-    });
+      const stockTd = document.createElement('td');
+      stockTd.innerHTML = `<input type="number" value="0">`;
+      tr.appendChild(stockTd);
+      table.appendChild(tr);
+    }
 
-    backBtn.addEventListener('click', () => {
-      table.innerHTML = '';
-      step2.classList.add('hidden');
-      step1.classList.remove('hidden');
-    });
+    const demandRow = document.createElement('tr');
+    for (let c = 0; c < cols; c++) {
+      const td = document.createElement('td');
+      td.innerHTML = `<input type="number" value="0">`;
+      demandRow.appendChild(td);
+    }
+    demandRow.appendChild(document.createElement('td'));
+    table.appendChild(demandRow);
+  });
 
-    sendBtn.addEventListener('click', () => {
-      const matrix = [];
-      const rowsHtml = table.querySelectorAll('tr');
+  backBtn.addEventListener('click', () => {
+    table.innerHTML = '';
+    step2.classList.add('hidden');
+    step1.classList.remove('hidden');
+  });
 
-      rowsHtml.forEach(tr => {
-        const rowData = [];
-        tr.querySelectorAll('input').forEach(input => {
-          rowData.push(Number(input.value) || 0);
-        });
-        matrix.push(rowData);
+  sendBtn.addEventListener('click', () => {
+    const matrix = [];
+    const rowsHtml = table.querySelectorAll('tr');
+
+    rowsHtml.forEach(tr => {
+      const rowData = [];
+      tr.querySelectorAll('input').forEach(input => {
+        rowData.push(Number(input.value) || 0);
       });
-
-      const payload = {
-        consumers: cols,
-        suppliers: rows,
-        matrix: matrix
-      };
-
-      fetch('/api/solve/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log('Ответ от сервера:', data);
-        alert('Ответ получен. Смотри консоль.');
-      })
-      .catch(err => {
-        console.error('Ошибка запроса:', err);
-        alert('Ошибка при отправке.');
-      });
+      matrix.push(rowData);
     });
-  </script>
+
+    const payload = {
+      consumers: cols,
+      suppliers: rows,
+      matrix: matrix
+    };
+
+    fetch('/api/solve/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log('Ответ от сервера:', data);
+      alert('Ответ получен. Смотри консоль.');
+    })
+    .catch(err => {
+      console.error('Ошибка запроса:', err);
+      alert('Ошибка при отправке.');
+    });
+  });
+</script>
+
 </body>
 </html>

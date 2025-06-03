@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>МАИ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Базовые сбросы */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Lora', serif;
+   
+  color: #222;
+  line-height: 1.7;
+  font-size: 16px;
+  padding: 0 16px;
+}
+
+/* Центровка основного контента */
+main, .content, .page-wrapper {
+  max-width: 1000px;                 /* ограничение ширины */
+  margin: 40px auto;                /* центрирование */
+  background-color: #fff;           /* белый фон */
+  padding: 30px 66px;
+  border-radius: 8px;
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.05);
+}
+
+.text-block {
+  max-width: 900px;
+  width: 100%;
+}
+
+/* Заголовки */
+h1, h2, h3 {
+  font-weight: 600;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+h1 {
+  font-size: 28px;
+  text-align: center;
+  margin-right: 10px;
+
+}
+
+h2 {
+  font-size: 22px;
+  margin-top: 32px;
+  
+}
+
+p {
+  margin-bottom: 16px;
+}
+
+ul {
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+a {
+  color: #0050b3;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+strong {
+  font-weight: 600;
+}
+
+/* Меню-бургер */
+.burger {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.burger div {
+  width: 100%;
+  height: 4px;
+  background-color: #333;
+  margin: 6px 0;
+  transition: 0.3s;
+}
+
+/* Боковая панель */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background-color: #f0f0f0;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+  padding: 60px 24px 20px;
+  transition: left 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar li {
+  margin: 6px 0;
+  font-size: 16px;
+  color: #111;
+  cursor: pointer;
+}
+
+/* Кнопка "На главную" */
+.home-button {
+  display: block;
+  margin: 40px auto 0;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #111;
+  border: 2px solid #111;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+/* Эффект блюра для основного контента при открытии сайдбара */
+.blur {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
+
+  </style>
+</head>
+<body>
+  <header class="header">
+    
+    <h1 class="page-title">Метод анализа иерархии<span style="font-size:13px; color:#555; margin-left: 3px">Теория</span></h1>
+  </header>
+
+  <section class="theory-section" style="font-family: 'Lora', serif; padding: 32px; max-width: 900px; margin: auto; line-height: 1.7; color: #222;">
+    <h2 style="font-size: 28px; font-weight: 600; margin-bottom: 16px;">Что такое метод анализа иерархий?</h2>
+  
+    <p>
+      Метод Анализа Иерархий (Analytic Hierarchy Process, МАИ) разработан американским математиком Томасом Саати в 70-х годах прошлого века. 
+      Это замкнутая логическая конструкция, позволяющая решать задачи многокритериального выбора (МКО), учитывая как качественные, так и количественные факторы с разной размерностью.
+    </p>
+
+    <p>
+      Метод основан на декомпозиции задачи и представлении её в виде иерархической структуры, которая позволяет включить в анализ все знания и суждения лица, принимающего решение.
+      Это помогает выявить относительную степень взаимодействия элементов иерархии и выразить её численно.
+    </p>
+
+    <p>
+      МАИ включает процедуры синтеза множественных суждений, получения приоритетов критериев и нахождения альтернативных решений. 
+      Решение подвергается проверке и переосмыслению на каждом этапе, что повышает качество.
+    </p>
+
+    <h3 style="margin-top: 24px; font-size: 22px;">Основные этапы метода</h3>
+    <ol>
+      <li>Представление системы критериев (целей) в виде иерархии.</li>
+      <li>Оценка приоритетов (весов) критериев с учётом их относительной важности в иерархии.</li>
+      <li>Определение лучшей альтернативы по значениям её характеристик и важности критериев.</li>
+    </ol>
+
+    <p>
+      Иерархия — абстрактная структура, изучающая функциональные взаимодействия компонентов системы. Она гибка, устойчива к малым изменениям, и отражает способ мышления человека.
+      В вершине иерархии располагается основная цель, ниже — подцели (критерии), и на нижнем уровне — альтернативы.
+    </p>
+
+    <h3 style="margin-top: 24px; font-size: 22px;">Пример использования</h3>
+    <p>Выбор смесителя в проект «Умный дом». Критерии:</p>
+    <ul>
+      <li>Интегрирование в систему «умный дом»</li>
+      <li>Экономия воды (время регулирования температуры и напора)</li>
+      <li>Бесконтактность</li>
+      <li>Вандалоустойчивость</li>
+      <li>Стоимость смесителя</li>
+    </ul>
+
+    <p>Альтернативы:</p>
+    <ul>
+      <li>Смеситель с раздельными кранами</li>
+      <li>Однорычажный смеситель</li>
+      <li>Смеситель с встроенным термостатом</li>
+      <li>Бесконтактный (электронный) смеситель с термостатом</li>
+      <li>Электронный сенсорный смеситель</li>
+    </ul>
+
+    <h3 style="margin-top: 24px; font-size: 22px;">Парные сравнения и матрицы</h3>
+    <p>
+      Элементы сравниваются попарно по влиянию на общую характеристику, формируя обратноссиметричную матрицу парных сравнений, где главная диагональ состоит из единиц.
+      Для субъективных сравнений применяется шкала интенсивности важности, где 1 — равная важность, 3 — незначительное превосходство, ..., 9 — абсолютное превосходство.
+    </p>
+
+    <h3 style="margin-top: 24px; font-size: 22px;">Вычисление приоритетов</h3>
+    <p>
+      Приоритеты определяются через геометрическое среднее каждой строки матрицы, которое затем нормируется. Далее рассчитываются индексы согласованности (ИС), максимальное собственное значение λmax, и отношение согласованности (ОС).
+    </p>
+
+    <p>
+      Значение ОС ≤ 0.10 считается приемлемым, что говорит о высокой согласованности суждений.
+    </p>
+
+    <h3 style="margin-top: 24px; font-size: 22px;">Синтез альтернатив</h3>
+    <p>
+      Локальные приоритеты умножаются на приоритет соответствующего критерия на высшем уровне и суммируются для каждой альтернативы, что позволяет определить наилучшую из них.
+    </p>
+  </section>
+  <!-- Меню-бургер -->
+<div class="burger" id="burger">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  
+  <!-- Боковая панель -->
+  <aside class="sidebar" id="sidebar">
+    <ul>
+      <li><strong>1. Транспортная задача</strong></li>
+      <li>1.1 Теория</li>
+      <li>1.2 Решение</li>
+      <li><br><strong>2. Метод Парето</strong></li>
+      <li>2.1 Теория</li>
+      <li>2.2 Решение</li>
+      <li><br><strong>3. Метод анализа иерархии</strong></li>
+      <li>3.1 Теория</li>
+      <li>3.2 Решение</li>
+    </ul>
+    <a href="/" class="home-button">На главную</a>
+  </aside>
+  <script>
+    // Получаем элементы
+    const burger = document.getElementById('burger');
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('mainContent');
+  
+    // Обработчик клика по бургеру
+    burger.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      if (content) {
+        content.classList.toggle('blur');
+      }
+    });
+  </script>
+</body>
+</html>

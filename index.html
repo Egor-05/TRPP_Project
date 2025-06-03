@@ -3,9 +3,243 @@
 <head>
   <meta charset="UTF-8">
   <title>Теория принятия решений</title>
-  <link rel="stylesheet" href="style.css">
   <!-- Подключаем шрифт Lora -->
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Сброс отступов и базовые настройки */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100vh;       /* Заставляем <html> и <body> занимать ровно высоту экрана */
+  overflow: hidden;    /* Отключаем скроллинг по вертикали и горизонтали */
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: 'Lora', serif;
+  background-color: #F5F5F5;
+  color: #222;
+}
+
+/* Основной контейнер */
+.page-container {
+  /* Жёсткая высота, чтобы учесть место для .steps-tracker (80px + 20px отступ снизу) */
+  height: calc(100vh - 100px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;        /* Центрируем left и right по вертикали */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  gap: 80px;
+  position: relative;         /* Для изоляции, если потребуется */
+}
+
+/* Контейнер для левого и правого блоков */
+.blocks-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;        /* Центрируем по вертикали внутри .page-container */
+  gap: 80px;
+  padding: 0 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ЛЕВАЯ КОЛОНКА */
+.left-block {
+  flex: 1;
+  max-width: 450px;
+}
+
+.welcome-title {
+  font-size: 36px;        /* Увеличен размер */
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  object-fit: contain;
+  padding: auto;
+}
+
+
+.emoji {
+  font-size: 1.1em;
+}
+
+.subtitle {
+  font-size: 20px;        /* Увеличен размер */
+  line-height: 1.6;
+  color: #555;
+  margin-top: 6px;
+}
+
+.icon {
+  font-size: 1em;
+}
+
+/* ПРАВАЯ КАРТОЧКА (чёрный фон) */
+.right-block {
+  flex: 1.2;
+  background-color: #000;
+  padding: 40px 32px;    /* Большие паддинги для высоты */
+  border-radius: 16px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.22);
+  width: 1000px;
+  height: 500px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* Заголовок «Теория & Решение» */
+.section-title-grid {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.section-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-column img {
+  width: 240px;
+  height: 140px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+  background-color: #111;
+}
+
+
+.section-title .separator {
+  font-size: 24px;
+  opacity: 0.8;
+  margin: 0 12px;
+}
+
+/* Контейнер для карточек */
+.cards {
+  display: flex;
+  gap: 24px;             /* Увеличенный промежуток между карточками */
+  margin-bottom: 36px;   /* Пространство перед кнопкой */
+}
+
+/* Оформление карточки */
+.card {
+  width: 240px;          /* Больше по ширине */
+  height: 140px;         /* Больше по высоте */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  background-color: #111;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Кнопка «Начать» */
+.cta-button {
+  background-color: #FACC15;
+  color: #111;
+  border: none;
+  padding: 12px 32px;    /* Более крупная кнопка */
+  font-size: 18px;       /* Увеличенный шрифт */
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  margin-top: auto;      /* Располагает кнопку внизу карточки */
+}
+
+.cta-button:hover {
+  background-color: #EAB308;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* НИЖНИЙ ТРЕКЕР ЭТАПОВ */
+.steps-tracker {
+  position: fixed;       /* Фиксируем внизу, не участвует в потоке */
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;          /* Фиксируем длину */
+  padding: 0 100px;
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  z-index: 100;
+}
+
+/* Линия под точками */
+.steps-tracker .steps-line {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  background-color: #DDD;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+/* Точка-этап */
+.step {
+  position: relative;
+  z-index: 2;
+  font-size: 16px;      /* Увеличен шрифт */
+  color: #888;
+  text-align: center;
+  width: 90px;          /* Больше ширина для текста */
+}
+
+/* Круг перед названием */
+.step::before {
+  content: '';
+  display: block;
+  width: 14px;          /* Больше диаметра */
+  height: 14px;
+  background-color: #888;
+  border-radius: 50%;
+  margin: 15px auto 0 auto; /* Сдвигаем вниз на 15px, оставляем центр по горизонтали */
+}
+
+  </style>
 </head>
 <body>
   <div class="page-container">

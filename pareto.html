@@ -190,7 +190,7 @@
           <table class="matrix-table" id="pareto-table"></table>
         </div>
         <div class="input-box criterion-row">
-          <label>Стремление критериев:</label>
+          <label></label>
           <div id="criterion-selects"></div>
         </div>
         <div class="button-row">
@@ -271,9 +271,40 @@
         const emptyTh = document.createElement('th');
         emptyTh.textContent = '';
         headerRow.appendChild(emptyTh);
+
+        criterionDirections = [];
+
         for (let j = 0; j < critCount; j++) {
           const th = document.createElement('th');
-          th.textContent = critNames[j] || `Критерий ${j + 1}`;
+
+          const title = document.createElement('div');
+          title.textContent = critNames[j] || `Критерий ${j + 1}`;
+          title.style.marginBottom = '4px';
+
+          const select = document.createElement('select');
+          select.style.marginTop = '4px';
+          select.style.fontSize = '12px';
+          select.style.padding = '2px';
+          select.style.borderRadius = '4px';
+
+          const option1 = document.createElement('option');
+          option1.value = 'positive';
+          option1.textContent = 'Положит.';
+
+          const option2 = document.createElement('option');
+          option2.value = 'negative';
+          option2.textContent = 'Отрицат.';
+
+          select.appendChild(option1);
+          select.appendChild(option2);
+
+          criterionDirections.push('positive');
+          select.addEventListener('change', (e) => {
+            criterionDirections[j] = e.target.value;
+          });
+
+          th.appendChild(title);
+          th.appendChild(select);
           headerRow.appendChild(th);
         }
         for (let i = 0; i < altCount; i++) {
@@ -293,23 +324,6 @@
         const criterionSelects = document.getElementById('criterion-selects');
         criterionSelects.innerHTML = '';
         criterionDirections = [];
-        for (let j = 0; j < critCount; j++) {
-          const select = document.createElement('select');
-          const option1 = document.createElement('option');
-          option1.value = 'positive';
-          option1.textContent = 'Положительное';
-          const option2 = document.createElement('option');
-          option2.value = 'negative';
-          option2.textContent = 'Отрицательное';
-          select.appendChild(option1);
-          select.appendChild(option2);
-          criterionSelects.appendChild(select);
-          criterionDirections.push('positive');
-          select.addEventListener('change', (e) => {
-            criterionDirections[j] = e.target.value;
-          });
-        }
-
         stepButtons[1].click();
       });
 

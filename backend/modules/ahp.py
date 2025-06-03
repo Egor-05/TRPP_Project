@@ -31,8 +31,7 @@ def calculate_consistency_ratio(matrix: np.ndarray) -> float:
     lambda_max = np.max(eigenvalues).real
     CI = (lambda_max - n) / (n - 1)
 
-    RI_dict = {1: 0, 2: 0, 3: 0.58, 4: 0.9, 5: 1.12,
-               6: 1.24, 7: 1.32, 8: 1.41, 9: 1.45}
+    RI_dict = {1: 0, 2: 0, 3: 0.58, 4: 0.9, 5: 1.12, 6: 1.24, 7: 1.32, 8: 1.41, 9: 1.45}
     RI = RI_dict.get(n, 1.49)
 
     return CI / RI if RI != 0 else 0
@@ -81,7 +80,7 @@ def calculate_vector(mtx):
     return w
 
 
-def synthesize(criteria_matrix, values, alternatives, c):
+def synthesize(criteria_matrix, values, alternatives, comparison):
     w = calculate_vector(criteria_matrix)
 
     alts = {}
@@ -89,14 +88,14 @@ def synthesize(criteria_matrix, values, alternatives, c):
         alts[i] = 0
 
     for i in range(len(values)):
-        matrix = build_comparison_matrix(values[i], c[i] == '+')
+        matrix = build_comparison_matrix(values[i], comparison[i] == "+")
         if calculate_consistency_ratio(matrix) > 0.1:
             matrix = adjust_matrix(matrix)
         wi = calculate_vector(matrix)
         for j in range(len(wi)):
             alts[alternatives[j]] += float(w[i] * wi[j])
 
-    return alts
+    return {"alternatives": alts}
 
 
 a = synthesize(
@@ -104,15 +103,14 @@ a = synthesize(
         [1, 1.0 / 2.0, 2, 2],
         [2, 1, 2, 4],
         [1.0 / 2.0, 1.0 / 2.0, 1, 2],
-        [1.0 / 2.0, 1.0 / 4.0, 1.0 / 2.0, 1]
-],
+        [1.0 / 2.0, 1.0 / 4.0, 1.0 / 2.0, 1],
+    ],
     [
         [95, 98, 131, 125, 70, 125, 130, 500, 280, 150],
         [13.5, 10, 11, 16.5, 9, 16, 11, 24, 25, 12],
         [2750, 2000, 2750, 2900, 1750, 2750, 2000, 4500, 3000, 3500],
-        [23000, 24000, 25000, 22500, 22500, 23000, 25000, 25000, 25000, 22500]
-],
+        [23000, 24000, 25000, 22500, 22500, 23000, 25000, 25000, 25000, 22500],
+    ],
     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    ['+', '-', '-', '+']
+    ["+", "-", "-", "+"],
 )
-

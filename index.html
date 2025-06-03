@@ -175,14 +175,16 @@ body {
   background-color: #FACC15;
   color: #111;
   border: none;
-  padding: 12px 32px;    /* Более крупная кнопка */
-  font-size: 18px;       /* Увеличенный шрифт */
+  padding: 12px 32px;
+  font-size: 18px;
   font-weight: 600;
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease;
-  margin-top: auto;      /* Располагает кнопку внизу карточки */
+  margin-top: auto;
+  text-decoration: none; /* Добавлено: убирает подчеркивание */
 }
+
 
 .cta-button:hover {
   background-color: #EAB308;
@@ -272,7 +274,8 @@ body {
             </div>
     
 
-        <button class="cta-button">Начать</button>
+       <a href="start.html" class="cta-button">Начать</a>
+
         </div>
     </div>
   </div>

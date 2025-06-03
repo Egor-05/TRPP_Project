@@ -37,7 +37,6 @@
     .sidebar {
       position: fixed;
       top: 0;
-      
       left: -260px;
       width: 260px;
       height: 100%;
@@ -83,12 +82,15 @@
       background-color: #FACC15; color: #111; border: 2px solid #111;
       border-radius: 6px; cursor: pointer;
     }
-    .input-container {
+    .input-container, .result-container {
       border: 2px solid #000;
       border-radius: 16px;
       padding: 24px 32px;
       background-color: #fff;
       margin-bottom: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .fields-wrapper {
       display: flex; justify-content: space-between;
@@ -107,6 +109,8 @@
     .matrix-table td {
       width: 50px; height: 40px;
       border: 1px solid #999; background-color: #e8f6fa;
+      text-align: center;
+      vertical-align: middle;
     }
     .matrix-table td input {
       width: 100%; height: 100%;
@@ -128,20 +132,31 @@
     }
     .hidden { display: none; }
     .home-button {
-  display: block;
-  margin: 40px auto 0;
-  text-align: center;
-  padding: 10px 20px;
-  font-size: 16px;
-
-  color: #111;
-  border: 2px solid #111;
-  border-radius: 8px;
+      display: block;
+      margin: 40px auto 0;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #111;
+      border: 2px solid #111;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .result-text {
+      margin-top: 12px;
+      font-size: 16px;
+    }
+    a {
+  color: inherit;
   text-decoration: none;
-  
+  cursor: default;
 }
 
-
+a:hover {
+  color: inherit;
+  text-decoration: none;
+  cursor: default;
+}
   </style>
 </head>
 <body>
@@ -157,28 +172,27 @@
 <aside class="sidebar" id="sidebar">
   <ul>
     <li><strong>1. Транспортная задача</strong></li>
-    <li>1.1 Теория</li>
-    <li>1.2 Решение</li>
+    <li><a href="potentials_theory.html">1.1 Теория</a></li>
+    <li><a href="potentials_prac.html">1.2 Решение</a></li>
     <li><br><strong>2. Метод Парето</strong></li>
-    <li>2.1 Теория</li>
-    <li>2.2 Решение</li>
+    <li><a href="pareto_theory.html">2.1 Теория</a></li>
+    <li><a href="pareto.html">2.2 Решение</a></li>
     <li><br><strong>3. Метод анализа иерархии</strong></li>
-    <li>3.1 Теория</li>
-    <li>3.2 Решение</li>
+    <li><a href="mai_theory.html">3.1 Теория</a></li>
+    <li><a href="mai.html">3.2 Решение</a></li>
   </ul>
-  <a href="/"
-   class="home-button">На главную</a>
-
+  <a href="index.html" class="home-button">На главную</a>
 </aside>
 
 <!-- Основной контент -->
 <div class="main-content" id="mainContent">
   <div class="page-wrapper">
-    <h1 class="page-title">Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span></h1>
+    <h1 class="page-title" id="main-title">Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span></h1>
 
     <div class="steps">
-      <button class="step-button">Шаг 1</button>
-      <button class="step-button">Шаг 2</button>
+      <button class="step-button" id="step1-btn">Шаг 1</button>
+      <button class="step-button" id="step2-btn">Шаг 2</button>
+      <button class="step-button" id="result-btn">Ответ</button>
     </div>
 
     <!-- Шаг 1 -->
@@ -205,6 +219,30 @@
         <button class="action-button" id="send-data">Решить</button>
       </div>
     </div>
+
+    <!-- Результат -->
+    <div class="input-container hidden" id="result">
+      <h2>Оптимальный план</h2>
+      <table class="matrix-table" id="result-table">
+        <tbody>
+          <tr>
+            <td>0<sup>[10]</sup></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+          </tr>
+          <tr>
+            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+          </tr>
+          <tr>
+            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+          </tr>
+          <tr>
+            <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+          </tr>
+          <tr>
+            <td colspan="6" class="result-text">Минимальные затраты = 100</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -219,13 +257,48 @@
     content.classList.toggle('blur');
   });
 
-  // Логика шагов
-  const toStep2Btn = document.getElementById('to-step2');
-  const backBtn = document.getElementById('back-to-step1');
+  // Кнопки шагов и ответ
+  const step1Btn = document.getElementById('step1-btn');
+  const step2Btn = document.getElementById('step2-btn');
+  const resultBtn = document.getElementById('result-btn');
+
   const step1 = document.getElementById('step1');
   const step2 = document.getElementById('step2');
+  const result = document.getElementById('result');
+  const mainTitle = document.getElementById('main-title');
+
+  // Начальное отображение шага 1
+  function showStep1() {
+    mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
+    step1.classList.remove('hidden');
+    step2.classList.add('hidden');
+    result.classList.add('hidden');
+  }
+  // Шаг 2
+  function showStep2() {
+    mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
+    step1.classList.add('hidden');
+    step2.classList.remove('hidden');
+    result.classList.add('hidden');
+  }
+  // Ответ
+  function showResult() {
+    mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
+    step1.classList.add('hidden');
+    step2.classList.add('hidden');
+    result.classList.remove('hidden');
+  }
+
+  step1Btn.addEventListener('click', showStep1);
+  step2Btn.addEventListener('click', showStep2);
+  resultBtn.addEventListener('click', showResult);
+
+  showStep1();
+
+  // Логика генерации таблицы и навигации между шагами сохранена как была
+  const toStep2Btn = document.getElementById('to-step2');
+  const backBtn = document.getElementById('back-to-step1');
   const table = document.getElementById('matrix-table');
-  const sendBtn = document.getElementById('send-data');
 
   let rows = 0, cols = 0;
 
@@ -240,6 +313,7 @@
 
     step1.classList.add('hidden');
     step2.classList.remove('hidden');
+    result.classList.add('hidden');
     table.innerHTML = '';
 
     for (let r = 0; r < rows; r++) {
@@ -269,43 +343,10 @@
     table.innerHTML = '';
     step2.classList.add('hidden');
     step1.classList.remove('hidden');
+    result.classList.add('hidden');
+    mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
   });
 
-  sendBtn.addEventListener('click', () => {
-    const matrix = [];
-    const rowsHtml = table.querySelectorAll('tr');
-
-    rowsHtml.forEach(tr => {
-      const rowData = [];
-      tr.querySelectorAll('input').forEach(input => {
-        rowData.push(Number(input.value) || 0);
-      });
-      matrix.push(rowData);
-    });
-
-    const payload = {
-      consumers: cols,
-      suppliers: rows,
-      matrix: matrix
-    };
-
-    fetch('/api/solve/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log('Ответ от сервера:', data);
-      alert('Ответ получен. Смотри консоль.');
-    })
-    .catch(err => {
-      console.error('Ошибка запроса:', err);
-      alert('Ошибка при отправке.');
-    });
-  });
 </script>
 
 </body>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Метод потенциалов — Практика</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100vh;
+      background-color: #F5F5F5;
+      font-family: 'Lora', serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .page-wrapper {
+      width: 90%;
+      max-width: 900px;
+      text-align: center;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 16px;
+    }
+
+    .page-title span {
+      font-size: 16px;
+      color: #888;
+      margin-left: 10px;
+    }
+
+    .steps {
+      display: inline-flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .step-button {
+      padding: 8px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      background-color: #FACC15;
+      color: #111;
+      border: 2px solid #111;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .step-button:hover {
+      background-color: #e5b00f;
+    }
+
+    .input-container {
+      border: 2px solid #000;
+      border-radius: 16px;
+      padding: 24px 32px 48px 32px;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .label {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .matrix-table {
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+
+    .matrix-table td {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #999;
+      text-align: center;
+      background-color: #e8f6fa;
+    }
+
+    .matrix-table td input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      text-align: center;
+      background: transparent;
+      font-size: 14px;
+    }
+
+    .solve-button {
+      margin-top: 20px;
+      padding: 12px 28px;
+      font-size: 18px;
+      font-weight: 600;
+      background-color: #FACC15;
+      color: #111;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .solve-button:hover {
+      background-color: #e5b00f;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <h1 class="page-title">Метод потенциалов <span>Практика</span></h1>
+
+    <div class="steps">
+      <button class="step-button">Шаг 1</button>
+      <button class="step-button">Шаг 2</button>
+    </div>
+
+    <div class="input-container">
+      <div class="label">Заполните матрицу тарифов</div>
+
+      <table class="matrix-table">
+        <!-- Пример: 4 строки, 4 столбца -->
+        <tbody>
+          <tr>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td> <!-- запасы -->
+          </tr>
+          <tr>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+          </tr>
+          <tr>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+          </tr>
+          <tr>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+          </tr>
+          <tr>
+            <!-- потребности -->
+           
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+            <td><input type="number" value="0"></td>
+          
+          </tr>
+        </tbody>
+      </table>
+
+      <button class="solve-button">Решить</button>
+    </div>
+  </div>
+</body>
+</html>

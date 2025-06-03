@@ -70,7 +70,7 @@
     }
     .fields-wrapper {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -78,10 +78,32 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
+      max-width: 200px;
     }
     .field-box input {
       width: 100%;
+      padding: 8px 12px;
+      font-size: 16px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+    }
+    .name-inputs {
+      margin-top: 16px;
+      margin-bottom: 24px;
+    }
+    .name-inputs .dynamic-input {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .name-inputs .dynamic-input label {
+      font-size: 16px;
+      margin-right: 8px;
+      min-width: 120px;
+    }
+    .name-inputs .dynamic-input input {
+      width: 200px;
       padding: 8px 12px;
       font-size: 16px;
       border: 1px solid #aaa;
@@ -95,11 +117,11 @@
       background-color: #f0f0f0;
       font-weight: 600;
       border: 1px solid #999;
-      padding: 5px;
+      padding: 8px 12px;
     }
     .matrix-table td {
-      width: 50px;
-      height: 40px;
+      width: 80px;
+      height: 50px;
       border: 1px solid #999;
       background-color: #e8f6fa;
     }
@@ -115,6 +137,8 @@
       background-color: #f0f0f0;
       font-weight: 600;
       text-align: center;
+      padding: 8px 12px;
+      width: 120px;
     }
     .next-btn, .solve-btn {
       padding: 12px 28px;
@@ -153,13 +177,19 @@
           <div class="fields-wrapper">
             <div class="field-box">
               <label>Введите количество альтернатив (строки)</label>
-              <input type="number" id="altCount" min="1">
+              <input type="number" id="altCount" min="1" onchange="generateNameInputs()">
             </div>
             <div class="field-box">
               <label>Введите количество критериев (столбцы)</label>
-              <input type="number" id="critCount" min="1">
+              <input type="number" id="critCount" min="1" onchange="generateNameInputs()">
             </div>
           </div>
+        </div>
+        <div class="name-inputs" id="altNamesContainer">
+          <label>Введите названия альтернатив</label>
+        </div>
+        <div class="name-inputs" id="critNamesContainer">
+          <label>Введите названия критериев</label>
         </div>
         <button class="next-btn" onclick="generateTable()">Далее</button>
       </div>
@@ -189,19 +219,55 @@
       }
     }
 
+    function generateNameInputs() {
+      const altCount = parseInt(document.getElementById('altCount').value) || 0;
+      const critCount = parseInt(document.getElementById('critCount').value) || 0;
+      const altContainer = document.getElementById('altNamesContainer');
+      const critContainer = document.getElementById('critNamesContainer');
+
+      altContainer.innerHTML = '<label>Введите названия альтернатив</label>';
+      critContainer.innerHTML = '<label>Введите названия критериев</label>';
+
+      for (let i = 0; i < altCount; i++) {
+        const div = document.createElement('div');
+        div.className = 'dynamic-input';
+        div.innerHTML = `<label>Альтернатива ${i + 1}:</label><input type="text" id="altName${i}" placeholder="Альтернатива ${i + 1}">`;
+        altContainer.appendChild(div);
+      }
+
+      for (let i = 0; i < critCount; i++) {
+        const div = document.createElement('div');
+        div.className = 'dynamic-input';
+        div.innerHTML = `<label>Критерий ${i + 1}:</label><input type="text" id="critName${i}" placeholder="Критерий ${i + 1}">`;
+        critContainer.appendChild(div);
+      }
+    }
+
     function generateTable() {
       const altCount = parseInt(document.getElementById('altCount').value) || 2;
       const critCount = parseInt(document.getElementById('critCount').value) || 2;
+      const altNames = [];
+      const critNames = [];
+
+      for (let i = 0; i < altCount; i++) {
+        const altName = document.getElementById(`altName${i}`)?.value || `Альтернатива ${i + 1}`;
+        altNames.push(altName);
+      }
+
+      for (let i = 0; i < critCount; i++) {
+        const critName = document.getElementById(`critName${i}`)?.value || `Критерий ${i + 1}`;
+        critNames.push(critName);
+      }
 
       let tableHTML = '<tr>';
       tableHTML += '<td></td>';
       for (let i = 0; i < critCount; i++) {
-        tableHTML += `<td>Критерий ${i+1}</td>`;
+        tableHTML += `<td>${critNames[i]}</td>`;
       }
       tableHTML += '</tr>';
       for (let i = 0; i < altCount; i++) {
         tableHTML += '<tr>';
-        tableHTML += `<td>Альтернатива ${i+1}</td>`;
+        tableHTML += `<td>${altNames[i]}</td>`;
         for (let j = 0; j < critCount; j++) {
           tableHTML += `<td><input type="number" step="0.01" placeholder="0.00"></td>`;
         }
@@ -243,7 +309,7 @@
         }
         if (!isDominated) paretoSet.push(i + 1);
       }
-      paretoResult = `Парето-оптимальное множество: ${paretoSet.join(', ') || '(ожидание данных)'}`;
+      paretoResult = `Ответ : ${paretoSet.join(', ') || '(ожидание данных)'}`;
       showTab(3);
     }
   </script>

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 from modules.paretto import paretto
 from modules.ahp import synthesize
@@ -10,13 +10,13 @@ app = FastAPI()
 
 
 class ParettoJSON(BaseModel):
-    alternatives: List
+    alternatives: Optional[List] = None
     matrix: List[List[float]]
     comparison: List[str]
 
 
 class AHPJSON(BaseModel):
-    alternatives: List
+    alternatives: Optional[List] = None
     matrix: List[List[float]]
     criteria_matrix: List[List[float]]
     comparison: List[str]
@@ -30,6 +30,8 @@ class TransportJSON(BaseModel):
 
 @app.post("/api/paretto")
 def paretto_method(data: ParettoJSON):
+    if not data.alternatives:
+        data.alternatives = [f"Альтернатива №{i + 1}" for i in range(len(data.matrix[0]))]
     return paretto(
         alternatives=data.alternatives, criteria=data.matrix, comparison=data.comparison
     )
@@ -37,6 +39,8 @@ def paretto_method(data: ParettoJSON):
 
 @app.post("/api/ahp")
 def ahp_method(data: AHPJSON):
+    if not data.alternatives:
+        data.alternatives = [f"Альтернатива №{i + 1}" for i in range(len(data.matrix[0]))]
     return synthesize(
         criteria_matrix=data.criteria_matrix,
         values=data.matrix,

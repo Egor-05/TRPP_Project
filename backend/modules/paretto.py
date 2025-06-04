@@ -8,7 +8,7 @@ def paretto(alternatives, criteria, comparison):
                 criteria[i][j] = -criteria[i][j]
 
     criteria = np.array(criteria)
-    paretto_set = []
+    paretto_set = {}
 
     for i in range(len(alternatives)):
         dominating = False
@@ -24,5 +24,5 @@ def paretto(alternatives, criteria, comparison):
                 break
         else:
             if dominating:
-                paretto_set.append(alternatives[i])
+                paretto_set[alternatives[i]] = [abs(int(j)) for j in criteria[:, i]]
     return {'paretto_set': paretto_set}

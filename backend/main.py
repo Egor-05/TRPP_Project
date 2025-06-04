@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
+import numpy as np
 
 from modules.paretto import paretto
 from modules.ahp import synthesize
@@ -57,9 +58,12 @@ def paretto_method(data: ParettoJSON):
 def ahp_method(data: AHPJSON):
     if not data.alternatives:
         data.alternatives = [f"Альтернатива №{i + 1}" for i in range(len(data.matrix[0]))]
+    mtx = []
+    for i in range(len(data.matrix[0])):
+        mtx.append([data.matrix[j][i] for j in range(len(data.matrix))])
     return synthesize(
         criteria_matrix=data.criteria_matrix,
-        values=data.matrix,
+        values=mtx,
         alternatives=data.alternatives,
         comparison=data.comparison,
     )

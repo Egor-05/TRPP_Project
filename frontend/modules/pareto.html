@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Метод Парето - Практика</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100vh;
+      background-color: #f5f5f5;
+      font-family: 'Lora', serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .page-wrapper { width: 100%; max-width: 1900px; padding: 0 20px; text-align: center; }
+    .page-title { font-size: 32px; font-weight: 600; margin-bottom: 24px; }
+    .page-title span { font-size: 20px; font-weight: 400; color: #666; }
+    .steps { display: inline-flex; gap: 12px; margin-bottom: 32px; }
+    .step-btn {
+      padding: 8px 20px; font-size: 16px; font-weight: 600;
+      background-color: #FACC15; color: #111; border: 2px solid #111;
+      border-radius: 6px; cursor: pointer;
+    }
+    .step-btn.active {
+      background-color: #e5b00f;
+      border-color: #111;
+    }
+    .content {
+      width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      border: 2px solid #000;
+      border-radius: 16px;
+      padding: 24px 32px;
+      background-color: #fff;
+      margin-bottom: 20px;
+    }
+    .step-content {
+      display: none;
+      text-align: center;
+    }
+    .step-content.active {
+      display: block;
+    }
+    .input-box {
+      margin-bottom: 24px;
+    }
+    .input-box label {
+      font-size: 16px;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .fields-wrapper {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .field-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .field-box input {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 16px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+    }
+    .name-inputs {
+      margin-top: 16px;
+    }
+    .name-inputs input {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 16px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    .matrix-table {
+      border-collapse: collapse;
+      margin: 24px auto;
+    }
+    .matrix-table th {
+      background-color: #f0f0f0;
+      font-weight: 600;
+      border: 1px solid #999;
+      padding: 5px;
+    }
+    .matrix-table td {
+      width: 50px;
+      height: 40px;
+      border: 1px solid #999;
+      background-color: #e8f6fa;
+    }
+    .matrix-table td input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      text-align: center;
+      font-size: 14px;
+    }
+    .matrix-table td:first-child {
+      background-color: #f0f0f0;
+      font-weight: 600;
+      text-align: center;
+    }
+    .criterion-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .criterion-row select {
+      padding: 8px 12px;
+      font-size: 16px;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+    }
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .next-btn, .solve-btn, .result-btn {
+      padding: 12px 28px;
+      font-size: 18px;
+      font-weight: 600;
+      background-color: #FACC15;
+      color: #111;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    .next-btn:hover, .solve-btn:hover, .result-btn:hover {
+      background-color: #e5b00f;
+      transform: translateY(-2px);
+    }
+    .result-text {
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 260px;
+      height: 100%;
+      background-color: #f0f0f0;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+      padding: 60px 24px 20px;
+      transition: left 0.3s ease;
+      z-index: 1000;
+    }
+    .sidebar.open {
+      left: 0;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .sidebar li {
+      margin: 6px 0;
+      font-size: 16px;
+      color: #111;
+      cursor: pointer;
+    }
+    .sidebar a {
+      color: #111;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      text-decoration: underline;
+    }
+    .home-button {
+      display: block;
+      margin: 40px auto 0;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #111;
+      border: 2px solid #111;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .blur {
+      filter: blur(5px);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="burger" id="burger" style="position:fixed; top:20px; left:20px; width:32px; height:32px; cursor:pointer; z-index:1001;">
+    <div style="width:100%; height:4px; background:#333; margin:6px 0;"></div>
+    <div style="width:100%; height:4px; background:#333; margin:6px 0;"></div>
+    <div style="width:100%; height:4px; background:#333; margin:6px 0;"></div>
+  </div>
+  <aside class="sidebar" id="sidebar">
+    <ul>
+      <li><strong>1. Транспортная задача</strong></li>
+      <li><a href="potentials_theory.html">1.1 Теория</a></li>
+      <li><a href="potentials_prac.html">1.2 Решение</a></li>
+      <li><br><strong>2. Метод Парето</strong></li>
+      <li><a href="pareto_theory.html">2.1 Теория</a></li>
+      <li><a href="pareto.html">2.2 Решение</a></li>
+      <li><br><strong>3. Метод анализа иерархии</strong></li>
+      <li><a href="mai_theory.html">3.1 Теория</a></li>
+      <li><a href="mai.html">3.2 Решение</a></li>
+    </ul>
+    <a href="index.html" class="home-button">На главную</a>
+  </aside>
+  <div class="page-wrapper" id="mainContent">
+    <header>
+      <h1 class="page-title">Метод Парето <span>Практика</span></h1>
+    </header>
+    <div class="steps">
+      <button class="step-btn active" data-step="1">Шаг 1</button>
+      <button class="step-btn" data-step="2">Шаг 2</button>
+      <button class="step-btn" data-step="3">Ответ</button>
+    </div>
+    <div class="content">
+      <div class="step-content active" id="step1">
+        <div class="input-box">
+          <div class="fields-wrapper">
+            <div class="field-box">
+              <label>Введите количество альтернатив (строки)</label>
+              <input type="number" min="1" id="alt-count" placeholder="Например, 2" />
+            </div>
+            <div class="field-box">
+              <label>Введите количество критериев (столбцы)</label>
+              <input type="number" min="1" id="crit-count" placeholder="Например, 2" />
+            </div>
+          </div>
+          <div class="input-box name-inputs">
+            <label>Названия альтернатив:</label>
+            <div id="alt-names"></div>
+          </div>
+          <div class="input-box name-inputs">
+            <label>Названия критериев:</label>
+            <div id="crit-names"></div>
+          </div>
+          <div class="button-row">
+            <button class="next-btn">Далее</button>
+          </div>
+        </div>
+      </div>
+      <div class="step-content" id="step2">
+        <div class="input-box">
+          <label>Заданные таблицы альтернатив</label>
+          <table class="matrix-table" id="pareto-table"></table>
+        </div>
+        <div class="input-box criterion-row">
+          <label></label>
+          <div id="criterion-selects"></div>
+        </div>
+        <div class="button-row">
+          <button class="solve-btn">Решить</button>
+        </div>
+      </div>
+      <div class="step-content" id="step3">
+        <div class="input-box">
+          <label>Ответ</label>
+          <div class="result-text" id="result">Парето-оптимальное множество: (ожидание данных)</div>
+        </div>
+        <div class="button-row">
+          <button class="result-btn">Решить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const burger = document.getElementById('burger');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    burger.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      mainContent.classList.toggle('blur');
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      const stepButtons = document.querySelectorAll('.step-btn');
+      const stepContents = document.querySelectorAll('.step-content');
+      const nextBtn = document.querySelector('.next-btn');
+      const solveBtn = document.querySelector('.solve-btn');
+      let altCount, critCount, altNames = [], critNames = [], data = [], criterionDirections = [];
+      stepButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          stepButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          stepContents.forEach(content => content.classList.remove('active'));
+          document.getElementById(`step${btn.dataset.step}`).classList.add('active');
+        });
+      });
+      document.getElementById('alt-count').addEventListener('input', () => {
+        altCount = document.getElementById('alt-count').value;
+        if (altCount && altCount > 0) {
+          const altNamesDiv = document.getElementById('alt-names');
+          altNamesDiv.innerHTML = '';
+          for (let i = 0; i < altCount; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = `Альтернатива ${i + 1}`;
+            altNamesDiv.appendChild(input);
+          }
+        }
+      });
+      document.getElementById('crit-count').addEventListener('input', () => {
+        critCount = document.getElementById('crit-count').value;
+        if (critCount && critCount > 0) {
+          const critNamesDiv = document.getElementById('crit-names');
+          critNamesDiv.innerHTML = '';
+          for (let j = 0; j < critCount; j++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = `Критерий ${j + 1}`;
+            critNamesDiv.appendChild(input);
+          }
+        }
+      });
+      nextBtn.addEventListener('click', () => {
+        altCount = document.getElementById('alt-count').value;
+        critCount = document.getElementById('crit-count').value;
+        if (!altCount || !critCount || altCount <= 0 || critCount <= 0) {
+          alert('Введите положительные числа для количества альтернатив и критериев!');
+          return;
+        }
+        altNames = Array.from(document.querySelectorAll('#alt-names input')).map(input => input.value || `Альтернатива ${Array.from(document.querySelectorAll('#alt-names input')).indexOf(input) + 1}`);
+        critNames = Array.from(document.querySelectorAll('#crit-names input')).map(input => input.value || `Критерий ${Array.from(document.querySelectorAll('#crit-names input')).indexOf(input) + 1}`);
+        const table = document.getElementById('pareto-table');
+        table.innerHTML = '';
+        const headerRow = table.insertRow();
+        const emptyTh = document.createElement('th');
+        emptyTh.textContent = '';
+        headerRow.appendChild(emptyTh);
+        criterionDirections = [];
+        for (let j = 0; j < critCount; j++) {
+          const th = document.createElement('th');
+          const title = document.createElement('div');
+          title.textContent = critNames[j] || `Критерий ${j + 1}`;
+          title.style.marginBottom = '4px';
+          const select = document.createElement('select');
+          select.style.marginTop = '4px';
+          select.style.fontSize = '12px';
+          select.style.padding = '2px';
+          select.style.borderRadius = '4px';
+          const option1 = document.createElement('option');
+          option1.value = 'positive';
+          option1.textContent = 'Положит.';
+          const option2 = document.createElement('option');
+          option2.value = 'negative';
+          option2.textContent = 'Отрицат.';
+          select.appendChild(option1);
+          select.appendChild(option2);
+          criterionDirections.push('positive');
+          select.addEventListener('change', (e) => {
+            criterionDirections[j] = e.target.value;
+          });
+          th.appendChild(title);
+          th.appendChild(select);
+          headerRow.appendChild(th);
+        }
+        for (let i = 0; i < altCount; i++) {
+          const row = table.insertRow();
+          const altCell = row.insertCell();
+          altCell.textContent = altNames[i] || `Альтернатива ${i + 1}`;
+          altCell.style.border = '1px solid #999';
+          for (let j = 0; j < critCount; j++) {
+            const cell = row.insertCell();
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.min = '0';
+            cell.appendChild(input);
+          }
+        }
+        const criterionSelects = document.getElementById('criterion-selects');
+        criterionSelects.innerHTML = '';
+        stepButtons[1].click();
+      });
+      solveBtn.addEventListener('click', async () => {
+        const table = document.getElementById('pareto-table');
+        data = [];
+        for (let i = 1; i < table.rows.length; i++) {
+          const row = [];
+          for (let j = 1; j < table.rows[i].cells.length; j++) {
+            const value = table.rows[i].cells[j].firstChild.value;
+            if (value === '') {
+              alert('Заполните все поля в таблице!');
+              return;
+            }
+            row.push(parseFloat(value));
+          }
+          data.push(row);
+        }
+        if (criterionDirections.length !== critCount) {
+          alert('Выберите направление для всех критериев!');
+          return;
+        }
+        const comparison = criterionDirections.map(dir => dir === 'positive' ? '+' : '-');
+        const payload = {
+          alternatives: altNames,
+          matrix: data,
+          comparison: comparison
+        };
+        try {
+          const response = await fetch('http://127.0.0.1:8000/api/paretto', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+          if (!response.ok) {
+            throw new Error('Ошибка при отправке данных на сервер');
+          }
+          const result = await response.json();
+          if (!result.paretto_set || !Array.isArray(result.paretto_set)) {
+            throw new Error('Некорректный формат ответа от сервера');
+          }
+          const paretoSet = result.paretto_set.map(index => altNames[index] || `Альтернатива ${index + 1}`);
+          document.getElementById('result').textContent = `Парето-оптимальное множество: (${paretoSet.join(', ')})`;
+          stepButtons[2].click();
+        } catch (error) {
+          console.error('Ошибка:', error);
+          alert('Произошла ошибка при отправке данных на сервер. Проверьте консоль для подробностей.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

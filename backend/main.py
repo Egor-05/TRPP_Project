@@ -12,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://example.com"],
+    allow_origins=["http://127.0.0.1:8080"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,21 +21,21 @@ app.add_middleware(
 
 class ParettoJSON(BaseModel):
     alternatives: Optional[List] = None
-    matrix: List[List[float]]
-    comparison: List[str]
+    matrix: List[List]
+    comparison: List
 
 
 class AHPJSON(BaseModel):
     alternatives: Optional[List] = None
-    matrix: List[List[float]]
-    criteria_matrix: List[List[float]]
-    comparison: List[str]
+    matrix: List[List]
+    criteria_matrix: List[List]
+    comparison: List
 
 
 class TransportJSON(BaseModel):
-    suppliers: List[float]
-    buyers: List[float]
-    matrix: List[List[float]]
+    suppliers: List
+    buyers: List
+    matrix: List[List]
 
 
 @app.post("/api/paretto")

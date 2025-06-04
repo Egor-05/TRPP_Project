@@ -130,7 +130,7 @@
       gap: 16px;
       margin-top: 20px;
     }
-    .next-btn, .solve-btn, .result-btn {
+    .next-btn, .solve-btn {
       padding: 12px 28px;
       font-size: 18px;
       font-weight: 600;
@@ -141,7 +141,7 @@
       cursor: pointer;
       transition: background-color 0.2s ease, transform 0.2s ease;
     }
-    .next-btn:hover, .solve-btn:hover, .result-btn:hover {
+    .next-btn:hover, .solve-btn:hover {
       background-color: #e5b00f;
       transform: translateY(-2px);
     }
@@ -273,9 +273,6 @@
           <label>Ответ</label>
           <div class="result-text" id="result">Парето-оптимальное множество: (ожидание данных)</div>
         </div>
-        <div class="button-row">
-          <button class="result-btn">Решить</button>
-        </div>
       </div>
     </div>
   </div>
@@ -287,12 +284,14 @@
       sidebar.classList.toggle('open');
       mainContent.classList.toggle('blur');
     });
+
     document.addEventListener('DOMContentLoaded', () => {
       const stepButtons = document.querySelectorAll('.step-btn');
       const stepContents = document.querySelectorAll('.step-content');
       const nextBtn = document.querySelector('.next-btn');
       const solveBtn = document.querySelector('.solve-btn');
       let altCount, critCount, altNames = [], critNames = [], data = [], criterionDirections = [];
+
       stepButtons.forEach(btn => {
         btn.addEventListener('click', () => {
           stepButtons.forEach(b => b.classList.remove('active'));
@@ -301,8 +300,9 @@
           document.getElementById(`step${btn.dataset.step}`).classList.add('active');
         });
       });
+
       document.getElementById('alt-count').addEventListener('input', () => {
-        altCount = document.getElementById('alt-count').value;
+        altCount = parseInt(document.getElementById('alt-count').value);
         if (altCount && altCount > 0) {
           const altNamesDiv = document.getElementById('alt-names');
           altNamesDiv.innerHTML = '';
@@ -312,10 +312,13 @@
             input.placeholder = `Альтернатива ${i + 1}`;
             altNamesDiv.appendChild(input);
           }
+        } else {
+          document.getElementById('alt-names').innerHTML = '';
         }
       });
+
       document.getElementById('crit-count').addEventListener('input', () => {
-        critCount = document.getElementById('crit-count').value;
+        critCount = parseInt(document.getElementById('crit-count').value);
         if (critCount && critCount > 0) {
           const critNamesDiv = document.getElementById('crit-names');
           critNamesDiv.innerHTML = '';
@@ -325,17 +328,22 @@
             input.placeholder = `Критерий ${j + 1}`;
             critNamesDiv.appendChild(input);
           }
+        } else {
+          document.getElementById('crit-names').innerHTML = '';
         }
       });
+
       nextBtn.addEventListener('click', () => {
-        altCount = document.getElementById('alt-count').value;
-        critCount = document.getElementById('crit-count').value;
+        altCount = parseInt(document.getElementById('alt-count').value);
+        critCount = parseInt(document.getElementById('crit-count').value);
         if (!altCount || !critCount || altCount <= 0 || critCount <= 0) {
           alert('Введите положительные числа для количества альтернатив и критериев!');
           return;
         }
-        altNames = Array.from(document.querySelectorAll('#alt-names input')).map(input => input.value || `Альтернатива ${Array.from(document.querySelectorAll('#alt-names input')).indexOf(input) + 1}`);
-        critNames = Array.from(document.querySelectorAll('#crit-names input')).map(input => input.value || `Критерий ${Array.from(document.querySelectorAll('#crit-names input')).indexOf(input) + 1}`);
+
+        altNames = Array.from(document.querySelectorAll('#alt-names input')).map(input => input.value.trim() || `Альтернатива ${Array.from(document.querySelectorAll('#alt-names input')).indexOf(input) + 1}`);
+        critNames = Array.from(document.querySelectorAll('#crit-names input')).map(input => input.value.trim() || `Критерий ${Array.from(document.querySelectorAll('#crit-names input')).indexOf(input) + 1}`);
+
         const table = document.getElementById('pareto-table');
         table.innerHTML = '';
         const headerRow = table.insertRow();
@@ -369,6 +377,7 @@
           th.appendChild(select);
           headerRow.appendChild(th);
         }
+
         for (let i = 0; i < altCount; i++) {
           const row = table.insertRow();
           const altCell = row.insertCell();
@@ -379,27 +388,35 @@
             const input = document.createElement('input');
             input.type = 'number';
             input.min = '0';
+            input.required = true;
             cell.appendChild(input);
           }
         }
+
         const criterionSelects = document.getElementById('criterion-selects');
         criterionSelects.innerHTML = '';
         stepButtons[1].click();
       });
+
       solveBtn.addEventListener('click', async () => {
         const table = document.getElementById('pareto-table');
         data = [];
         for (let i = 1; i < table.rows.length; i++) {
           const row = [];
           for (let j = 1; j < table.rows[i].cells.length; j++) {
-            const value = table.rows[i].cells[j].firstChild.value;
-            if (value === '') {
-              alert('Заполните все поля в таблице!');
+            const value = table.rows[i].cells[j].firstChild.value.trim();
+            if (value === '' || isNaN(parseFloat(value))) {
+              alert('Заполните все поля в таблице числами!');
               return;
             }
             row.push(parseFloat(value));
           }
           data.push(row);
+        }
+
+        if (!altNames.length || !critNames.length || !data.length || !criterionDirections.length) {
+          alert('Заполните все данные: альтернативы, критерии и таблицу!');
+          return;
         }
         const comparison = criterionDirections.map(dir => dir === 'positive' ? '+' : '-');
         const payload = {
@@ -407,27 +424,34 @@
           matrix: data,
           comparison: comparison
         };
+
+        console.log('Отправляемые данные:', JSON.stringify(payload, null, 2));
+
         try {
-          const response = await fetch('http://127.0.0.1:8000/api/paretto', {
+          const response = await fetch('http://backend:8000/api/paretto', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
           });
+
           if (!response.ok) {
-            throw new Error('Ошибка при отправке данных на сервер');
+            const errorData = await response.json();
+            throw new Error(`Ошибка ${response.status}: ${errorData.error || 'Неизвестная ошибка'}`);
           }
+
           const result = await response.json();
           if (!result.paretto_set || !Array.isArray(result.paretto_set)) {
             throw new Error('Некорректный формат ответа от сервера');
           }
+
           const paretoSet = result.paretto_set.map(index => altNames[index] || `Альтернатива ${index + 1}`);
           document.getElementById('result').textContent = `Парето-оптимальное множество: (${paretoSet.join(', ')})`;
           stepButtons[2].click();
         } catch (error) {
           console.error('Ошибка:', error);
-          alert('Произошла ошибка при отправке данных на сервер. Проверьте консоль для подробностей.');
+          alert(`Произошла ошибка: ${error.message}`);
         }
       });
     });

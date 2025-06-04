@@ -269,180 +269,205 @@ a:hover {
 </div>
 
 <script>
-  
   // Бургер-меню
-  const burger = document.getElementById('burger');
-  const sidebar = document.getElementById('sidebar');
-  const content = document.getElementById('mainContent');
+const burger = document.getElementById('burger');
+const sidebar = document.getElementById('sidebar');
+const content = document.getElementById('mainContent');
 
-  burger.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
-    content.classList.toggle('blur');
-  });
+burger.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  content.classList.toggle('blur');
+});
 
-  // Кнопки шагов и ответ
-  const step1Btn = document.getElementById('step1-btn');
-  const step2Btn = document.getElementById('step2-btn');
-  const resultBtn = document.getElementById('result-btn');
+// Кнопки шагов и ответ
+const step1Btn = document.getElementById('step1-btn');
+const step2Btn = document.getElementById('step2-btn');
+const resultBtn = document.getElementById('result-btn');
 
-  const step1 = document.getElementById('step1');
-  const step2 = document.getElementById('step2');
-  const result = document.getElementById('result');
-  const mainTitle = document.getElementById('main-title');
+const step1 = document.getElementById('step1');
+const step2 = document.getElementById('step2');
+const result = document.getElementById('result');
+const mainTitle = document.getElementById('main-title');
 
-  // Начальное отображение шага 1
-  function showStep1() {
-    mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
-    step1.classList.remove('hidden');
-    step2.classList.add('hidden');
-    result.classList.add('hidden');
+// Начальное отображение шага 1
+function showStep1() {
+  mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
+  step1.classList.remove('hidden');
+  step2.classList.add('hidden');
+  result.classList.add('hidden');
+}
+
+// Шаг 2
+function showStep2() {
+  mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
+  step1.classList.add('hidden');
+  step2.classList.remove('hidden');
+  result.classList.add('hidden');
+}
+
+// Ответ
+function showResult() {
+  mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
+  step1.classList.add('hidden');
+  step2.classList.add('hidden');
+  result.classList.remove('hidden');
+}
+
+step1Btn.addEventListener('click', showStep1);
+step2Btn.addEventListener('click', showStep2);
+resultBtn.addEventListener('click', showResult);
+
+showStep1();
+
+// Логика генерации таблицы и навигации между шагами
+const toStep2Btn = document.getElementById('to-step2');
+const backBtn = document.getElementById('back-to-step1');
+const table = document.getElementById('matrix-table');
+
+let rows = 0, cols = 0;
+
+toStep2Btn.addEventListener('click', () => {
+  rows = parseInt(document.getElementById('rows').value, 10);
+  cols = parseInt(document.getElementById('cols').value, 10);
+
+  if (!rows || !cols || rows < 1 || cols < 1) {
+    alert("Введите корректные значения.");
+    return;
   }
 
-  // Шаг 2
-  function showStep2() {
-    mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
-    step1.classList.add('hidden');
-    step2.classList.remove('hidden');
-    result.classList.add('hidden');
-  }
+  step1.classList.add('hidden');
+  step2.classList.remove('hidden');
+  result.classList.add('hidden');
+  table.innerHTML = '';
 
-  // Ответ
-  function showResult() {
-    mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
-    step1.classList.add('hidden');
-    step2.classList.add('hidden');
-    result.classList.remove('hidden');
-  }
-
-  step1Btn.addEventListener('click', showStep1);
-  step2Btn.addEventListener('click', showStep2);
-  resultBtn.addEventListener('click', showResult);
-
-  showStep1();
-
-  // Логика генерации таблицы и навигации между шагами
-  const toStep2Btn = document.getElementById('to-step2');
-  const backBtn = document.getElementById('back-to-step1');
-  const table = document.getElementById('matrix-table');
-
-  let rows = 0, cols = 0;
-
-  toStep2Btn.addEventListener('click', () => {
-    rows = parseInt(document.getElementById('rows').value, 10);
-    cols = parseInt(document.getElementById('cols').value, 10);
-
-    if (!rows || !cols || rows < 1 || cols < 1) {
-      alert("Введите корректные значения.");
-      return;
-    }
-
-    step1.classList.add('hidden');
-    step2.classList.remove('hidden');
-    result.classList.add('hidden');
-    table.innerHTML = '';
-
-    // Генерация таблицы
-    for (let r = 0; r < rows; r++) {
-      const tr = document.createElement('tr');
-      
-      // Заполняем ячейки с тарифами
-      for (let c = 0; c < cols; c++) {
-        const td = document.createElement('td');
-        td.innerHTML = `<input type="number" value="0">`;
-        tr.appendChild(td);
-      }
-      
-      // Добавляем ячейку для поставки в крайней правой ячейке
-      const stockTd = document.createElement('td');
-      stockTd.innerHTML = `<input type="number" value="0">`;
-      stockTd.style.backgroundColor = "#e0e0e0"; // Выделяем столбец
-      tr.appendChild(stockTd);
-      table.appendChild(tr);
-    }
-
-    // Добавляем строку для потребностей
-    const demandRow = document.createElement('tr');
+  // Генерация таблицы
+  for (let r = 0; r < rows; r++) {
+    const tr = document.createElement('tr');
+    
+    // Заполняем ячейки с тарифами
     for (let c = 0; c < cols; c++) {
       const td = document.createElement('td');
       td.innerHTML = `<input type="number" value="0">`;
-      demandRow.appendChild(td);
+      tr.appendChild(td);
     }
-
-    // Добавляем пустую ячейку в последнем столбце
-    demandRow.appendChild(document.createElement('td'));
-    table.appendChild(demandRow);
     
-    // Добавляем выделение последней строки
-    const lastRow = table.lastChild;
-    lastRow.querySelectorAll('td').forEach(td => {
-        td.style.backgroundColor = "#e0e0e0"; // Выделяем строку
-    });
+    // Добавляем ячейку для поставки в крайней правой ячейке
+    const stockTd = document.createElement('td');
+    stockTd.innerHTML = `<input type="number" value="0">`;
+    stockTd.style.backgroundColor = "#e0e0e0"; // Выделяем столбец
+    tr.appendChild(stockTd);
+    table.appendChild(tr);
+  }
+
+  // Добавляем строку для потребностей
+  const demandRow = document.createElement('tr');
+  for (let c = 0; c < cols; c++) {
+    const td = document.createElement('td');
+    td.innerHTML = `<input type="number" value="0">`;
+    demandRow.appendChild(td);
+  }
+
+  // Добавляем пустую ячейку в последнем столбце
+  demandRow.appendChild(document.createElement('td'));
+  table.appendChild(demandRow);
+  
+  // Добавляем выделение последней строки
+  const lastRow = table.lastChild;
+  lastRow.querySelectorAll('td').forEach(td => {
+      td.style.backgroundColor = "#e0e0e0"; // Выделяем строку
   });
-
-  backBtn.addEventListener('click', () => {
-    table.innerHTML = '';
-    step2.classList.add('hidden');
-    step1.classList.remove('hidden');
-    result.classList.add('hidden');
-    mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
-  });
-
-  // Отправка данных на сервер
-  document.getElementById('send-data').addEventListener('click', () => {
-    const matrix = [];
-    const buyers = [];
-    const suppliers = [];
-
-    // Получаем все значения матрицы
-    const rowsData = document.querySelectorAll('#matrix-table tr');
-    for (let r = 0; r < rowsData.length - 1; r++) {
-        const row = [];
-        const cells = rowsData[r].querySelectorAll('td input');
-        for (let c = 0; c < cells.length - 1; c++) {
-            row.push(parseFloat(cells[c].value));
-        }
-        matrix.push(row);
-    }
-
-    // Получаем данные о потребностях (последняя строка)
-    const demandCells = rowsData[rowsData.length - 1].querySelectorAll('td input');
-    for (let c = 0; c < demandCells.length - 1; c++) {
-        buyers.push(parseFloat(demandCells[c].value));
-    }
-
-    // Получаем данные о поставках (последний столбец)
-    const supplierCells = document.querySelectorAll('#matrix-table tr td:nth-last-child(2) input');
-    for (let r = 0; r < supplierCells.length; r++) {
-        suppliers.push(parseFloat(supplierCells[r].value));
-    }
-
-    // Формируем тело запроса
-    const requestData = {
-        buyers: buyers,
-        suppliers: suppliers,
-        matrix: matrix
-    };
-
-    // Отправляем данные на сервер
-    fetch('http://127.0.0.1:8000/api/transport_task', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Обработка ответа
-        console.log(data);
-        // Например, отобразить результат
-        showResult();
-        // Можно обработать nw_plan, mc_plan, optimized_plan для вывода на экран
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
 });
+
+backBtn.addEventListener('click', () => {
+  table.innerHTML = '';
+  step2.classList.add('hidden');
+  step1.classList.remove('hidden');
+  result.classList.add('hidden');
+  mainTitle.innerHTML = 'Метод потенциалов <span style="font-size: 16px; color: #888;">Практика</span>';
+});
+
+// Обработчик нажатия на кнопку "Отправить"
+document.getElementById('send-data').addEventListener('click', () => {
+  const matrix = [];
+  const buyers = [];
+  const suppliers = [];
+
+  // Получаем все значения матрицы
+  const rowsData = document.querySelectorAll('#matrix-table tr');
+  for (let r = 0; r < rowsData.length - 1; r++) {
+    const row = [];
+    const cells = rowsData[r].querySelectorAll('td input');
+    for (let c = 0; c < cells.length - 1; c++) {
+      row.push(parseFloat(cells[c].value));
+    }
+    matrix.push(row);
+  }
+
+  // Получаем данные о потребностях (последняя строка)
+  const demandCells = rowsData[rowsData.length - 1].querySelectorAll('td input');
+  for (let c = 0; c < demandCells.length - 1; c++) {
+    buyers.push(parseFloat(demandCells[c].value));
+  }
+
+  // Получаем данные о поставках (последний столбец)
+  const supplierCells = document.querySelectorAll('#matrix-table tr td:nth-last-child(2) input');
+  for (let r = 0; r < supplierCells.length; r++) {
+    suppliers.push(parseFloat(supplierCells[r].value));
+  }
+
+  // Формируем объект для отправки на сервер
+  const requestData = {
+    buyers: buyers,
+    suppliers: suppliers,
+    matrix: matrix
+  };
+
+  console.log('Отправляемые данные:', requestData); // Выводим данные в консоль для проверки
+
+  // Отправляем данные на сервер
+  fetch('http://127.0.0.1:8000/api/transport_task', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json', // Тип содержимого
+    },
+    body: JSON.stringify(requestData), // Преобразуем объект в строку JSON
+  })
+  .then(response => response.json()) // Преобразуем ответ от сервера в JSON
+  .then(data => {
+    console.log('Ответ от сервера:', data); // Выводим ответ от сервера в консоль
+    showResult(data); // Отображаем результат на странице
+  })
+  .catch(error => {
+    console.error('Ошибка:', error); // Обрабатываем ошибки
+  });
+});
+
+// Функция для отображения результата на странице
+function showResult(data) {
+  const resultContainer = document.getElementById('result');
+  let resultHTML = `
+    <h3>Оптимальный план</h3>
+    <p>Минимальные затраты: ${data.min_cost.cost}</p>
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          ${data.min_cost.matrix[0].map((_, index) => `<th>Столбец ${index + 1}</th>`).join('')}
+        </tr>
+      </thead>
+      <tbody>
+        ${data.min_cost.matrix.map(row => `
+          <tr>
+            ${row.map(cell => `<td>${cell}</td>`).join('')}
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  
+  resultContainer.innerHTML = resultHTML; // Вставляем результат в контейнер
+  showResult(); // Переход на шаг 3 для отображения результатов
+}
+
 </script>
 
 </body>

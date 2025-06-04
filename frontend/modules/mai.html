@@ -579,7 +579,7 @@ overlay.addEventListener('click', () => {
         comparison: comparison,
         criteria_matrix: criteriaMatrix
       };
-
+      console.log(payload);
       try {
         const response = await fetch('http://127.0.0.1:8000/api/ahp', {
           method: 'POST',
@@ -594,6 +594,7 @@ overlay.addEventListener('click', () => {
         }
 
         const result = await response.json();
+        console.log(result);
         displayResult(result);
       } catch (error) {
         console.error('Ошибка:', error);

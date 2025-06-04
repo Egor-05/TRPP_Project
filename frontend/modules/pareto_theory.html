@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Парето</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Базовые сбросы */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Lora', serif;
+      color: #222;
+      line-height: 1.7;
+      font-size: 16px;
+      padding: 0 16px;
+    }
+
+    /* Центровка основного контента */
+    main, .content, .page-wrapper {
+      max-width: 1000px;                 /* ограничение ширины */
+      margin: 40px auto;                /* центрирование */
+      background-color: #fff;           /* белый фон */
+      padding: 30px 66px;
+      border-radius: 8px;
+      box-shadow: 0 0 16px rgba(0, 0, 0, 0.05);
+    }
+
+    .text-block {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    /* Заголовки */
+    h1, h2, h3 {
+      font-weight: 600;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      margin-right: 10px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-top: 32px;
+    }
+
+    p {
+      margin-bottom: 16px;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    a {
+      color: #0050b3;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    strong {
+      font-weight: 600;
+    }
+
+    /* Меню-бургер */
+.burger {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.burger div {
+  width: 100%;
+  height: 4px;
+  background-color: #333;
+  margin: 6px 0;
+  transition: 0.3s;
+}
+
+/* Боковая панель */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background-color: #f0f0f0;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+  padding: 60px 24px 20px;
+  transition: left 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar li {
+  margin: 6px 0;
+  font-size: 16px;
+  color: #111;
+  cursor: pointer;
+}
+
+/* Кнопка "На главную" */
+.home-button {
+  display: block;
+  margin: 40px auto 0;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #111;
+  border: 2px solid #111;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+/* Эффект блюра для основного контента при открытии сайдбара */
+.blur {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
+
+  </style>
+</head>
+<body>
+  <header class="header">
+ 
+    <h1 class="page-title">Метод Парето<span style="font-size:13px; color:#555; margin-left: 3px">Теория</span></h1>
+  </header>
+
+  <section class="theory-section" style="font-family: 'Lora', serif; padding: 32px; max-width: 900px; margin: auto; line-height: 1.7; color: #222;">
+    <h2 style="font-size: 28px; font-weight: 600; margin-bottom: 16px;">Лекция 1. Метод Парето и Парето-оптимальность</h2>
+    <p>
+      Управление основывается на определённых решениях, направленных на организацию коллективной деятельности. Важнейшим признаком таких решений является их направленность на достижение целей.
+    </p>
+    <p>
+      Метод Парето — это концепция многокритериальной оптимизации, которая используется для оценки решений, когда невозможно улучшить один критерий, не ухудшая другой.
+    </p>
+    <h3 style="margin-top: 24px; font-size: 22px;">Суть метода Парето:</h3>
+    <ul>
+      <li>Решение называется Парето-оптимальным, если нет другого решения, которое улучшает хотя бы один критерий, не ухудшая остальные.</li>
+      <li>Множество всех таких решений называется множеством Парето (эффективных, неулучшаемых точек).</li>
+      <li>Выбор оптимального решения осуществляется из множества Парето на основе дополнительной информации или предпочтений.</li>
+    </ul>
+    <p>
+      Парето-оптимальность — ключевой принцип в многокритериальном принятии решений, который помогает выделить компромиссные варианты в задачах с конфликтующими критериями.
+    </p>
+    <h3 style="margin-top: 24px; font-size: 22px;">Пример:</h3>
+    <p>
+      Рассмотрим задачу выбора места работы из нескольких вариантов по трём критериям: зарплата, длительность отпуска и время поездки. Оптимальные по Парето варианты — это такие, где нельзя улучшить зарплату, не ухудшая время поездки или отпуск.
+    </p>
+    <p>
+      Метод Парето помогает сузить множество решений до эффективных точек, среди которых ЛПР (лицо, принимающее решение) выбирает наиболее предпочтительный вариант.
+    </p>
+    <h3 style="margin-top: 24px; font-size: 22px;">Значение метода:</h3>
+    <ul>
+      <li>Позволяет оценивать и отбирать эффективные решения в сложных многокритериальных задачах.</li>
+      <li>Используется в экономике, управлении, инженерии и других областях для принятия оптимальных решений с несколькими критериями.</li>
+      <li>Учитывает субъективные предпочтения ЛПР после выделения множества Парето.</li>
+    </ul>
+  </section>
+<!-- Меню-бургер -->
+<div class="burger" id="burger">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  
+  <!-- Боковая панель -->
+<aside class="sidebar" id="sidebar">
+  <ul>
+    <li><strong>1. Транспортная задача</strong></li>
+    <li><a href="potentials_theory.html">1.1 Теория</a></li>
+    <li><a href="potentials_prac.html">1.2 Решение</a></li>
+    <li><br><strong>2. Метод Парето</strong></li>
+    <li><a href="pareto_theory.html">2.1 Теория</a></li>
+    <li><a href="pareto.html">2.2 Решение</a></li>
+    <li><br><strong>3. Метод анализа иерархии</strong></li>
+    <li><a href="mai_theory.html">3.1 Теория</a></li>
+    <li><a href="mai.html">3.2 Решение</a></li>
+  </ul>
+  <a href="index.html" class="home-button">На главную</a>
+</aside>
+  
+  <script>
+    // Получаем элементы
+    const burger = document.getElementById('burger');
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('mainContent');
+  
+    // Обработчик клика по бургеру
+    burger.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      if (content) {
+        content.classList.toggle('blur');
+      }
+    });
+  </script>
+</body>
+</html>

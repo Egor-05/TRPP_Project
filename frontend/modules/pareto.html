@@ -150,8 +150,6 @@
       font-weight: 600;
       font-size: 16px;
     }
-
-    /* Сайдбар */
     .sidebar {
       position: fixed;
       top: 0;
@@ -195,7 +193,6 @@
       border-radius: 8px;
       text-decoration: none;
     }
-    /* Эффект блюра при открытии */
     .blur {
       filter: blur(5px);
       pointer-events: none;
@@ -204,14 +201,11 @@
   </style>
 </head>
 <body>
-  <!-- Меню-бургер -->
   <div class="burger" id="burger" style="position:fixed; top:20px; left:20px; width:32px; height:32px; cursor:pointer; z-index:1001;">
     <div style="width:100%; height:4px; background:#333; margin:6px 0;"></div>
     <div style="width:100%; height:4px; background:#333; margin:6px 0;"></div>
     <div style="width:100%; height:4px; background:#333; margin:6px 0;"></div>
   </div>
-
-  <!-- Сайдбар -->
   <aside class="sidebar" id="sidebar">
     <ul>
       <li><strong>1. Транспортная задача</strong></li>
@@ -226,7 +220,6 @@
     </ul>
     <a href="index.html" class="home-button">На главную</a>
   </aside>
-
   <div class="page-wrapper" id="mainContent">
     <header>
       <h1 class="page-title">Метод Парето <span>Практика</span></h1>
@@ -286,26 +279,20 @@
       </div>
     </div>
   </div>
-
   <script>
-    // Бургер меню и сайдбар
     const burger = document.getElementById('burger');
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
-
     burger.addEventListener('click', () => {
       sidebar.classList.toggle('open');
       mainContent.classList.toggle('blur');
     });
-
-    // Логика переключения шагов
     document.addEventListener('DOMContentLoaded', () => {
       const stepButtons = document.querySelectorAll('.step-btn');
       const stepContents = document.querySelectorAll('.step-content');
       const nextBtn = document.querySelector('.next-btn');
       const solveBtn = document.querySelector('.solve-btn');
       let altCount, critCount, altNames = [], critNames = [], data = [], criterionDirections = [];
-
       stepButtons.forEach(btn => {
         btn.addEventListener('click', () => {
           stepButtons.forEach(b => b.classList.remove('active'));
@@ -314,7 +301,6 @@
           document.getElementById(`step${btn.dataset.step}`).classList.add('active');
         });
       });
-
       document.getElementById('alt-count').addEventListener('input', () => {
         altCount = document.getElementById('alt-count').value;
         if (altCount && altCount > 0) {
@@ -328,7 +314,6 @@
           }
         }
       });
-
       document.getElementById('crit-count').addEventListener('input', () => {
         critCount = document.getElementById('crit-count').value;
         if (critCount && critCount > 0) {
@@ -342,7 +327,6 @@
           }
         }
       });
-
       nextBtn.addEventListener('click', () => {
         altCount = document.getElementById('alt-count').value;
         critCount = document.getElementById('crit-count').value;
@@ -350,48 +334,37 @@
           alert('Введите положительные числа для количества альтернатив и критериев!');
           return;
         }
-
         altNames = Array.from(document.querySelectorAll('#alt-names input')).map(input => input.value || `Альтернатива ${Array.from(document.querySelectorAll('#alt-names input')).indexOf(input) + 1}`);
         critNames = Array.from(document.querySelectorAll('#crit-names input')).map(input => input.value || `Критерий ${Array.from(document.querySelectorAll('#crit-names input')).indexOf(input) + 1}`);
-
         const table = document.getElementById('pareto-table');
         table.innerHTML = '';
         const headerRow = table.insertRow();
         const emptyTh = document.createElement('th');
         emptyTh.textContent = '';
         headerRow.appendChild(emptyTh);
-
         criterionDirections = [];
-
         for (let j = 0; j < critCount; j++) {
           const th = document.createElement('th');
-
           const title = document.createElement('div');
           title.textContent = critNames[j] || `Критерий ${j + 1}`;
           title.style.marginBottom = '4px';
-
           const select = document.createElement('select');
           select.style.marginTop = '4px';
           select.style.fontSize = '12px';
           select.style.padding = '2px';
           select.style.borderRadius = '4px';
-
           const option1 = document.createElement('option');
           option1.value = 'positive';
           option1.textContent = 'Положит.';
-
           const option2 = document.createElement('option');
           option2.value = 'negative';
           option2.textContent = 'Отрицат.';
-
           select.appendChild(option1);
           select.appendChild(option2);
-
           criterionDirections.push('positive');
           select.addEventListener('change', (e) => {
             criterionDirections[j] = e.target.value;
           });
-
           th.appendChild(title);
           th.appendChild(select);
           headerRow.appendChild(th);
@@ -409,46 +382,51 @@
             cell.appendChild(input);
           }
         }
-
         const criterionSelects = document.getElementById('criterion-selects');
         criterionSelects.innerHTML = '';
-        criterionDirections = [];
         stepButtons[1].click();
       });
-
       solveBtn.addEventListener('click', async () => {
         const table = document.getElementById('pareto-table');
         data = [];
         for (let i = 1; i < table.rows.length; i++) {
           const row = [];
           for (let j = 1; j < table.rows[i].cells.length; j++) {
-            row.push(parseFloat(table.rows[i].cells[j].firstChild.value) || 0);
+            const value = table.rows[i].cells[j].firstChild.value;
+            if (value === '') {
+              alert('Заполните все поля в таблице!');
+              return;
+            }
+            row.push(parseFloat(value));
           }
           data.push(row);
         }
-
+        if (criterionDirections.length !== critCount) {
+          alert('Выберите направление для всех критериев!');
+          return;
+        }
+        const comparison = criterionDirections.map(dir => dir === 'positive' ? '+' : '-');
         const payload = {
-          criteriaCount: parseInt(critCount),
-          alternativesCount: parseInt(altCount),
+          alternatives: altNames,
           matrix: data,
-          criteriaDirections: criterionDirections
+          comparison: comparison
         };
-
         try {
-          const response = await fetch('/solve', {
+          const response = await fetch('http://127.0.0.1:8000/api/paretto', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
           });
-
           if (!response.ok) {
             throw new Error('Ошибка при отправке данных на сервер');
           }
-
           const result = await response.json();
-          const paretoSet = result.map(index => altNames[index] || `Альтернатива ${index + 1}`);
+          if (!result.paretto_set || !Array.isArray(result.paretto_set)) {
+            throw new Error('Некорректный формат ответа от сервера');
+          }
+          const paretoSet = result.paretto_set.map(index => altNames[index] || `Альтернатива ${index + 1}`);
           document.getElementById('result').textContent = `Парето-оптимальное множество: (${paretoSet.join(', ')})`;
           stepButtons[2].click();
         } catch (error) {

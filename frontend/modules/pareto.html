@@ -428,7 +428,7 @@
         console.log('Отправляемые данные:', JSON.stringify(payload, null, 2));
 
         try {
-          const response = await fetch('http://backend:8000/api/paretto', {
+          const response = await fetch('http://127.0.0.1:8000/api/paretto', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -442,11 +442,12 @@
           }
 
           const result = await response.json();
+          console.log(result);
           if (!result.paretto_set || !Array.isArray(result.paretto_set)) {
             throw new Error('Некорректный формат ответа от сервера');
           }
 
-          const paretoSet = result.paretto_set.map(index => altNames[index] || `Альтернатива ${index + 1}`);
+          const paretoSet = result.paretto_set.map(index => altNames[index] || `Альтернатива ${index}`);
           document.getElementById('result').textContent = `Парето-оптимальное множество: (${paretoSet.join(', ')})`;
           stepButtons[2].click();
         } catch (error) {

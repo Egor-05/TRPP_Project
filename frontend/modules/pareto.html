@@ -401,10 +401,6 @@
           }
           data.push(row);
         }
-        if (criterionDirections.length !== critCount) {
-          alert('Выберите направление для всех критериев!');
-          return;
-        }
         const comparison = criterionDirections.map(dir => dir === 'positive' ? '+' : '-');
         const payload = {
           alternatives: altNames,

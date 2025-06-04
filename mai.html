@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Метод Анализа Иерархий Практика</title>
+  <link rel="icon" type="image/png" href="icon.png">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -18,6 +19,8 @@
       max-width: 900px;
       padding: 0 20px;
       text-align: center;
+      position: relative;
+      z-index: 1;
     }
     .page-title {
       font-size: 32px;
@@ -102,7 +105,7 @@
       margin-right: 8px;
       min-width: 120px;
     }
-    .name-inputs .dynamic-input input {
+    .name-inputs .dynamic-input input, .name-inputs .dynamic-input select {
       width: 200px;
       padding: 8px 12px;
       font-size: 16px;
@@ -149,7 +152,12 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.2s ease;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .next-btn:disabled, .solve-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+      transform: none;
     }
     .next-btn:hover, .solve-btn:hover {
       background-color: #e5b00f;
@@ -159,6 +167,92 @@
       margin-top: 20px;
       font-weight: 600;
       font-size: 16px;
+    }
+    /* Меню-бургер */
+    .burger {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+    }
+    .burger div {
+      width: 100%;
+      height: 4px;
+      background-color: #333;
+      margin: 6px 0;
+      transition: 0.3s;
+    }
+    .burger.open div:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .burger.open div:nth-child(2) {
+      opacity: 0;
+    }
+    .burger.open div:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+    /* Боковая панель */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 260px;
+      height: 100%;
+      background-color: #f0f0f0;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+      padding: 60px 24px 20px;
+      transition: left 0.3s ease;
+      z-index: 1000;
+    }
+    .sidebar.open {
+      left: 0;
+    }
+    .sidebar ul {
+      list-style: none;
+    }
+    .sidebar li {
+      margin: 6px 0;
+      font-size: 16px;
+      color: #111;
+      cursor: pointer;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+      cursor: default;
+    }
+    a:hover {
+      color: inherit;
+      text-decoration: none;
+      cursor: default;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+    .overlay.active {
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .fields-wrapper {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .field-box {
+        max-width: 100%;
+      }
+      .name-inputs .dynamic-input input, .name-inputs .dynamic-input select {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -189,34 +283,88 @@
           <label>Введите названия альтернатив</label>
         </div>
         <div class="name-inputs" id="critNamesContainer">
-          <label>Введите названия критериев</label>
+          <label>Введите названия критериев и их сравнение</label>
         </div>
-        <button class="next-btn" onclick="generateTable()">Далее</button>
+        <button class="next-btn" id="nextBtn" onclick="generateTable()" disabled>Далее</button>
       </div>
 
       <div id="tab2" class="tab-content">
         <p>Заданные таблицы альтернатив</p>
-        <table class="matrix-table" id="dataTable"></table>
-        <button class="solve-btn" onclick="calculatePareto()">Решить</button>
+        <table class="matrix-table" id="dataTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+        <p>Матрица попарного сравнения критериев</p>
+        <table class="matrix-table" id="criteriaMatrixTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+        <button class="solve-btn" id="solveBtn" onclick="sendToAPI()">Решить</button>
       </div>
 
       <div id="tab3" class="tab-content">
-        <div class="result-text" id="result">Парето-оптимальное множество: (ожидание данных)</div>
+        <div class="result-text" id="result">Ожидание ответа...</div>
       </div>
     </div>
   </div>
+  <!-- Меню-бургер -->
+  <div class="burger" id="burger">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+  <!-- Боковая панель -->
+  <aside class="sidebar" id="sidebar">
+    <ul>
+      <li><strong>1. Транспортная задача</strong></li>
+      <li><a href="potentials_theory.html">1.1 Теория</a></li>
+      <li><a href="potentials_prac.html">1.2 Решение</a></li>
+      <li><br><strong>2. Метод Парето</strong></li>
+      <li><a href="pareto_theory.html">2.1 Теория</a></li>
+      <li><a href="pareto.html">2.2 Решение</a></li>
+      <li><br><strong>3. Метод анализа иерархии</strong></li>
+      <li><a href="mai_theory.html">3.1 Теория</a></li>
+      <li><a href="mai.html">3.2 Решение</a></li>
+    </ul>
+    <a href="index.html" class="home-button">На главную</a>
+  </aside>
+  <!-- Overlay для закрытия боковой панели -->
+  <div class="overlay" id="overlay"></div>
 
   <script>
-    let paretoResult = "Парето-оптимальное множество: (ожидание данных)";
+    const burger = document.getElementById('burger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const nextBtn = document.getElementById('nextBtn');
+    const solveBtn = document.getElementById('solveBtn');
+
+    burger.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      burger.classList.toggle('open');
+      overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      burger.classList.remove('open');
+      overlay.classList.remove('active');
+    });
+
+    document.getElementById('altCount').addEventListener('input', validateInputs);
+    document.getElementById('critCount').addEventListener('input', validateInputs);
+
+    function validateInputs() {
+      const altCount = parseInt(document.getElementById('altCount').value) || 0;
+      const critCount = parseInt(document.getElementById('critCount').value) || 0;
+      nextBtn.disabled = altCount <= 0 || critCount <= 0;
+    }
 
     function showTab(tabNumber) {
       document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       document.querySelector(`.tab:nth-child(${tabNumber})`).classList.add('active');
       document.getElementById(`tab${tabNumber}`).classList.add('active');
-      if (tabNumber === 3) {
-        document.getElementById('result').innerHTML = paretoResult;
-      }
     }
 
     function generateNameInputs() {
@@ -226,7 +374,7 @@
       const critContainer = document.getElementById('critNamesContainer');
 
       altContainer.innerHTML = '<label>Введите названия альтернатив</label>';
-      critContainer.innerHTML = '<label>Введите названия критериев</label>';
+      critContainer.innerHTML = '<label>Введите названия критериев и их сравнение</label>';
 
       for (let i = 0; i < altCount; i++) {
         const div = document.createElement('div');
@@ -238,7 +386,13 @@
       for (let i = 0; i < critCount; i++) {
         const div = document.createElement('div');
         div.className = 'dynamic-input';
-        div.innerHTML = `<label>Критерий ${i + 1}:</label><input type="text" id="critName${i}" placeholder="Критерий ${i + 1}">`;
+        div.innerHTML = `
+          <label>Критерий ${i + 1}:</label>
+          <input type="text" id="critName${i}" placeholder="Критерий ${i + 1}">
+          <select id="critComp${i}">
+            <option value="+">+</option>
+            <option value="-">-</option>
+          </select>`;
         critContainer.appendChild(div);
       }
     }
@@ -259,57 +413,152 @@
         critNames.push(critName);
       }
 
-      let tableHTML = '<tr>';
-      tableHTML += '<td></td>';
+      // Generate alternatives matrix
+      let theadHTML = '<tr><th></th>';
       for (let i = 0; i < critCount; i++) {
-        tableHTML += `<td>${critNames[i]}</td>`;
+        theadHTML += `<th>${critNames[i]}</th>`;
       }
-      tableHTML += '</tr>';
+      theadHTML += '</tr>';
+
+      let tbodyHTML = '';
       for (let i = 0; i < altCount; i++) {
-        tableHTML += '<tr>';
-        tableHTML += `<td>${altNames[i]}</td>`;
+        tbodyHTML += '<tr>';
+        tbodyHTML += `<td>${altNames[i]}</td>`;
         for (let j = 0; j < critCount; j++) {
-          tableHTML += `<td><input type="number" step="0.01" placeholder="0.00"></td>`;
+          tbodyHTML += `<td><input type="number" step="0.01" placeholder="0.00" id="matrix_${i}_${j}"></td>`;
         }
-        tableHTML += '</tr>';
+        tbodyHTML += '</tr>';
       }
-      document.getElementById('dataTable').innerHTML = tableHTML;
+
+      const dataTable = document.getElementById('dataTable');
+      dataTable.querySelector('thead').innerHTML = theadHTML;
+      dataTable.querySelector('tbody').innerHTML = tbodyHTML;
+
+      // Generate criteria comparison matrix
+      let critTheadHTML = '<tr><th></th>';
+      for (let i = 0; i < critCount; i++) {
+        critTheadHTML += `<th>${critNames[i]}</th>`;
+      }
+      critTheadHTML += '</tr>';
+
+      let critTbodyHTML = '';
+      for (let i = 0; i < critCount; i++) {
+        critTbodyHTML += '<tr>';
+        critTbodyHTML += `<td>${critNames[i]}</td>`;
+        for (let j = 0; j < critCount; j++) {
+          if (i === j) {
+            critTbodyHTML += `<td><input type="number" value="1" readonly></td>`;
+          } else if (i < j) {
+            critTbodyHTML += `<td><input type="number" step="0.01" id="critMatrix_${i}_${j}" placeholder="0.00"></td>`;
+          } else {
+            critTbodyHTML += `<td><input type="number" step="0.01" id="critMatrix_${i}_${j}" placeholder="0.00" readonly></td>`;
+          }
+        }
+        critTbodyHTML += '</tr>';
+      }
+
+      const criteriaMatrixTable = document.getElementById('criteriaMatrixTable');
+      criteriaMatrixTable.querySelector('thead').innerHTML = critTheadHTML;
+      criteriaMatrixTable.querySelector('tbody').innerHTML = critTbodyHTML;
+
+      // Add event listeners for symmetric input
+      for (let i = 0; i < critCount; i++) {
+        for (let j = i + 1; j < critCount; j++) {
+          const input = document.getElementById(`critMatrix_${i}_${j}`);
+          const mirrorInput = document.getElementById(`critMatrix_${j}_${i}`);
+          input.addEventListener('input', () => {
+            const value = parseFloat(input.value) || 0;
+            mirrorInput.value = value !== 0 ? (1 / value).toFixed(2) : '';
+          });
+        }
+      }
+
       showTab(2);
     }
 
-    function calculatePareto() {
-      const inputs = document.querySelectorAll('#dataTable input');
-      const altCount = document.querySelectorAll('#dataTable tr').length - 1;
-      const critCount = document.querySelectorAll('#dataTable tr:first-child td').length - 1;
-      const data = [];
+    async function sendToAPI() {
+      const altCount = parseInt(document.getElementById('altCount').value) || 2;
+      const critCount = parseInt(document.getElementById('critCount').value) || 2;
+      const altNames = [];
+      const critNames = [];
+      const comparison = [];
+
+      // Collect alternatives and criteria names
       for (let i = 0; i < altCount; i++) {
-        data[i] = [];
-        for (let j = 0; j < critCount; j++) {
-          data[i][j] = parseFloat(inputs[i * critCount + j].value) || 0;
-        }
+        const altName = document.getElementById(`altName${i}`)?.value || `Альтернатива ${i + 1}`;
+        altNames.push(altName);
       }
 
-      let paretoSet = [];
+      for (let i = 0; i < critCount; i++) {
+        const critName = document.getElementById(`critName${i}`)?.value || `Критерий ${i + 1}`;
+        const critComp = document.getElementById(`critComp${i}`)?.value || '+';
+        critNames.push(critName);
+        comparison.push(critComp);
+      }
+
+      // Collect alternatives matrix
+      const matrix = [];
       for (let i = 0; i < altCount; i++) {
-        let isDominated = false;
-        for (let j = 0; j < altCount; j++) {
-          if (i !== j) {
-            let dominates = true;
-            for (let k = 0; k < critCount; k++) {
-              if (data[j][k] < data[i][k]) {
-                dominates = false;
-                break;
-              }
-            }
-            if (dominates && data[j].some((val, k) => val > data[i][k])) {
-              isDominated = true;
-              break;
-            }
+        const row = [];
+        for (let j = 0; j < critCount; j++) {
+          const value = parseFloat(document.getElementById(`matrix_${i}_${j}`).value) || 0;
+          row.push(value);
+        }
+        matrix.push(row);
+      }
+
+      // Collect criteria matrix
+      const criteriaMatrix = [];
+      for (let i = 0; i < critCount; i++) {
+        const row = [];
+        for (let j = 0; j < critCount; j++) {
+          if (i === j) {
+            row.push(1);
+          } else {
+            const value = parseFloat(document.getElementById(`critMatrix_${i}_${j}`).value) || 0;
+            row.push(value);
           }
         }
-        if (!isDominated) paretoSet.push(i + 1);
+        criteriaMatrix.push(row);
       }
-      paretoResult = `Ответ : ${paretoSet.join(', ') || '(ожидание данных)'}`;
+
+      const payload = {
+        alternatives: altNames,
+        matrix: matrix,
+        comparison: comparison,
+        criteria_matrix: criteriaMatrix
+      };
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/ahp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('Ошибка при отправке данных на сервер');
+        }
+
+        const result = await response.json();
+        displayResult(result);
+      } catch (error) {
+        console.error('Ошибка:', error);
+        document.getElementById('result').innerHTML = `Ошибка: ${error.message}`;
+        showTab(3);
+      }
+    }
+
+    function displayResult(data) {
+      const alternatives = data.alternatives || {};
+      let resultHTML = '<p>Приоритеты альтернатив:</p><ul>';
+      for (const [alt, priority] of Object.entries(alternatives)) {
+        resultHTML += `<li>${alt}: ${priority.toFixed(4)}</li>`;
+      }
+      resultHTML += '</ul>';
+      document.getElementById('result').innerHTML = resultHTML;
       showTab(3);
     }
   </script>

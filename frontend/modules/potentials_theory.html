@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Транспортная задача</title>
-  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="icon" type="image/png" href=""../images/icon.png"">
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet">
   <style>
     /* Базовые сбросы */
@@ -13,12 +13,13 @@
       box-sizing: border-box;
     }
 
-    html, body {
-      height: 100vh;       /* Заставляем <html> и <body> занимать ровно высоту экрана */
-      overflow: hidden;    /* Отключаем скроллинг по вертикали и горизонтали */
-      margin: 0;           /* Убираем стандартные отступы браузера */
-      padding: 0;
-    }
+html, body {
+  height: 100vh; /* Оставляем высоту экрана */
+  margin: 0; /* Убираем стандартные отступы */
+  padding: 0; /* Убираем стандартные отступы */
+  overflow: auto; /* Включаем прокрутку */
+}
+
 
     body {
       font-family: 'Lora', serif;
@@ -294,14 +295,24 @@
 
   <!-- JS для переключения сайдбара и блюра -->
   <script>
-    const burger = document.getElementById('burger');
-    const sidebar = document.getElementById('sidebar');
-    const content = document.getElementById('mainContent');
+const burger = document.getElementById('burger');
+const sidebar = document.getElementById('sidebar');
+const content = document.getElementById('mainContent');
+const body = document.body;
 
-    burger.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      content.classList.toggle('blur');
-    });
+burger.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  content.classList.toggle('blur');
+
+  // Отключаем прокрутку при открытии сайдбара
+  if (sidebar.classList.contains('open')) {
+    body.style.overflow = 'hidden'; // Отключаем прокрутку страницы
+  } else {
+    body.style.overflow = 'auto'; // Включаем прокрутку страницы
+  }
+});
+
+
   </script>
 </body>
 </html>

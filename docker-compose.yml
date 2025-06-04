@@ -7,8 +7,10 @@ services:
       - "8000:8000"
 
   frontend:
-    build: ./mireatom-frontend
+    build: ./frontend
     ports:
       - "8080:8080"
     depends_on:
       - backend
+    volumes:
+      - .:/usr/share/nginx/html

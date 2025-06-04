@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -12,7 +13,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://example.com"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,21 +22,26 @@ app.add_middleware(
 
 class ParettoJSON(BaseModel):
     alternatives: Optional[List] = None
-    matrix: List[List[float]]
-    comparison: List[str]
+    matrix: List[List]
+    comparison: List
 
 
 class AHPJSON(BaseModel):
     alternatives: Optional[List] = None
-    matrix: List[List[float]]
-    criteria_matrix: List[List[float]]
-    comparison: List[str]
+    matrix: List[List]
+    criteria_matrix: List[List]
+    comparison: List
 
 
 class TransportJSON(BaseModel):
-    suppliers: List[float]
-    buyers: List[float]
-    matrix: List[List[float]]
+    suppliers: List
+    buyers: List
+    matrix: List[List]
+
+
+@app.options("/api/paretto")
+async def paretto_options():
+    return JSONResponse(content={}, status_code=200)
 
 
 @app.post("/api/paretto")

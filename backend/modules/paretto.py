@@ -25,4 +25,4 @@ def paretto(alternatives, criteria, comparison):
         else:
             if dominating:
                 paretto_set[alternatives[i]] = [abs(int(j)) for j in criteria[:, i]]
-    return {'paretto_set': paretto_set}
+    return {'paretto_set': list(paretto_set.keys())}

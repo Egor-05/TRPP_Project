@@ -49,8 +49,11 @@ async def paretto_options():
 def paretto_method(data: ParettoJSON):
     if not data.alternatives:
         data.alternatives = [f"Альтернатива №{i + 1}" for i in range(len(data.matrix[0]))]
+    mtx = []
+    for i in range(len(data.matrix[0])):
+        mtx.append([data.matrix[j][i] for j in range(len(data.matrix))])
     return paretto(
-        alternatives=data.alternatives, criteria=data.matrix, comparison=data.comparison
+        alternatives=data.alternatives, criteria=mtx, comparison=data.comparison
     )
 
 
